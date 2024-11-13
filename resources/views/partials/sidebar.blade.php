@@ -16,7 +16,7 @@
         <a href="{{ route('sales.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">
             <i class="fas fa-shopping-cart mr-2"></i>Ventas
         </a>
-        <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">
+        <a href="{{ route('reports.sales.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">
             <i class="fas fa-chart-bar mr-2"></i>Reportes
         </a>
         <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">

@@ -8,12 +8,15 @@ use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\Product;
 use PDF;
+use Carbon\Carbon;
 
 class SaleController extends Controller
 {
     public function index()
     {
-        $sales = Sale::with('details.product')->paginate(10);
+        $sales = Sale::with('details.product')
+                                            ->whereDate('created_at', Carbon::today())
+                                            ->paginate(3);
         return view('sales.index', compact('sales'));
     }
 
@@ -26,22 +29,7 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        //dd($data);
-        /* $validated = $request->validate([
-            'products' => 'required|array',
-            'products.*.id' => 'required|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-        ]); */
-        
-        //$sale = Sale::create(); // Asegúrate de agregar los campos necesarios
-
-         // Calcular el total de la venta
-       /*  $totalAmount = 0;
-        foreach ($data['products'] as $item) {
-            $product = Product::find($item['id']);
-            $totalAmount += $product->price * $item['quantity'];
-        } */
-       //dd($request->input('payment_method'));
+    
         // Crear la venta
         $sale = Sale::create([
             'date' => now(),
@@ -50,13 +38,21 @@ class SaleController extends Controller
             'cash_amount' => $request->input('cash_amount'),
             'change_amount' => $request->input('change_amount'),
             'card_reference' => $request->input('card_reference'),
-            
         ]);
+    
         foreach ($data['products'] as $item) {
-            //dd($item);
-            $product = Product::where('id', $item['id'])->first();
+            $product = Product::findOrFail($item['id']);
+    
+            // Validar stock disponible
+            if ($product->stock < $item['quantity']) {
+                return redirect()->back()->withErrors(['message' => "Stock insuficiente para el producto {$product->name}."]);
+            }
+    
+            // Reducir stock
+            $product->decrement('stock', $item['quantity']);
+    
+            // Crear el detalle de la venta
             $totalPrice = $product->price * $item['quantity'];
-
             SaleDetail::create([
                 'sale_id' => $sale->id,
                 'product_id' => $product->id,
@@ -65,9 +61,10 @@ class SaleController extends Controller
                 'total_price' => $totalPrice,
             ]);
         }
-
+    
         return redirect()->route('sales.index')->with('success', 'Venta creada con éxito.');
     }
+    
 
     public function show($id)
     {

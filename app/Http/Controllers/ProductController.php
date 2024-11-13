@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Models\Product;
+use App\Models\ProductStockHistory;
 
 class ProductController extends Controller
 {
@@ -107,6 +108,40 @@ class ProductController extends Controller
 
         return response()->json($product);
     }
+
+    public function showAddStockForm($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('products.add_stock', compact('product'));
+    }
+
+
+    public function addProductStock(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'expiration_date' => 'nullable|date|after:today',
+        ]);
+
+        $product = Product::findOrFail($id);
+
+        // Agregar la cantidad al stock actual del producto
+        $product->stock += $request->input('quantity');
+        $product->save();
+
+        // Crear una entrada en el historial de stock
+        ProductStockHistory::create([
+            'product_id' => $product->id,
+            'quantity' => $request->input('quantity'),
+            'date_added' => now(),
+            'purchase_price' => $request->input('purchase_price'),
+            'sale_price' => $request->input('sale_price'),
+            'expiration_date' => $request->input('expiration_date'),
+        ]);
+
+        return redirect()->route('products.index')->with('success', 'Stock añadido exitosamente.');
+    }
+
 
 
 }
