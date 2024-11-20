@@ -1,35 +1,17 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Dashboard')
-
-@section('header-title', 'Panel de Control')
-
-@section('content')
-<div class="container mx-auto px-6 py-8">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-gray-700">Total de Ventas</h2>
-            <p class="text-3xl font-bold text-blue-600 mt-2">$1,200</p>
-            <span class="text-green-500 text-sm">+8% desde ayer</span>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-gray-700">Órdenes Totales</h2>
-            <p class="text-3xl font-bold text-blue-600 mt-2">320</p>
-            <span class="text-green-500 text-sm">+5% desde ayer</span>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-gray-700">Productos Vendidos</h2>
-            <p class="text-3xl font-bold text-blue-600 mt-2">85</p>
-            <span class="text-green-500 text-sm">+12% desde ayer</span>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-gray-700">Nuevos Clientes</h2>
-            <p class="text-3xl font-bold text-blue-600 mt-2">12</p>
-            <span class="text-green-500 text-sm">+0.5% desde ayer</span>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("You're logged in!") }}
+                </div>
+            </div>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>
