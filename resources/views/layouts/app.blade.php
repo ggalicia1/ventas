@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -7,6 +8,7 @@
     <title>@yield('title', 'Sistema de Ventas')</title>
     <script src="{{ asset('js/tailwind.js') }}"></script>
     <link href="{{ asset('css/font-awesome/css/all.min.css') }}" rel="stylesheet">
+    <link rel="icon" href="{{ asset('img/favicon.png') }}" type="image/png">
     
 </head>
 <style>
@@ -27,6 +29,7 @@
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Navbar -->
             @include('partials.navbar')
+            @include('layouts.navigation')
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-y-auto bg-gray-200">

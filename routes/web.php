@@ -1,27 +1,34 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ReportController;
 
-/* Route::get('/', function () {
-    return view('welcome');
-}); */
+
+require __DIR__.'/auth.php';
 
 Route::get('/', function () {
-    return view('home');
-})->name('home');
+    return redirect('/login');
+});
 
+Route::get('/dashboard', function () {
+    return view('home');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // Rutas para Categorías
 Route::resource('categories', CategoryController::class);
 
 // Rutas para Productos
 Route::resource('products', ProductController::class);
-//Route::get('products/search', [ProductController::class, 'search'])->name('products.search');
-
 
 // Si quieres añadir una ruta para buscar productos:
 Route::get('/products/search/{search}', [ProductController::class, 'search'])->name('products.search');
@@ -36,8 +43,3 @@ Route::resource('sales', SaleController::class);
 Route::get('sales/{id}/receipt', [SaleController::class, 'generateReceipt'])->name('sales.receipt');
 
 Route::get('/reports/sales', [ReportController::class, 'index'])->name('reports.sales.index');
-
-
-// Si necesitas rutas adicionales para reportes o dashboard:
-// Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-// Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');

@@ -3,7 +3,6 @@
 @section('content')
 <div class="container mx-auto px-6 py-8">
     <h1 class="text-4xl font-bold mb-6 text-center">Bienvenido a la Tienda</h1>
-    
 
 </div>
 
