@@ -48,7 +48,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
         ]);
-
+        //dd($validated_data);
         $this->product_repository->create($validated_data);
 
         return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');

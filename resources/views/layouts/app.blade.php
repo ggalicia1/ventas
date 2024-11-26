@@ -1,56 +1,25 @@
-
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Sistema de Ventas')</title>
-    <script src="{{ asset('js/tailwind.js') }}"></script>
-    <link href="{{ asset('css/font-awesome/css/all.min.css') }}" rel="stylesheet">
-    <link rel="icon" href="{{ asset('img/favicon.png') }}" type="image/png">
-    
-</head>
-<style>
-    .pagination .active a {
-        @apply bg-blue-600 text-white; /* Cambia esto a tu preferencia */
-    }
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    .pagination a {
-        @apply text-gray-600 hover:bg-blue-500 hover:text-white; /* Cambia según lo necesites */
-    }
-</style>
-<body class="bg-gray-100 font-sans antialiased">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        @include('partials.sidebar')
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Navbar -->
-            @include('partials.navbar')
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             @include('layouts.navigation')
-
-            <!-- Main Content Area -->
-            <main class="flex-1 overflow-y-auto bg-gray-200">
-                @yield('content')
-            </main>
-
-            <!-- Footer -->
-            @include('partials.footer')
         </div>
-    </div>
 
-    <script src="{{ asset('js/chart.js') }} "></script>
-    <script src="{{ asset('js/sweetalert2.js') }}"></script>
-    <script>
-        const sidebarToggle = document.querySelector('.md\\:hidden');
-        const sidebar = document.querySelector('aside');
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-        });
-    </script>
-    @stack('scripts')
-</body>
-
+        <script src="{{ asset('js/chart.js') }} "></script>
+        <script src="{{ asset('js/sweetalert2.js') }}"></script>
+    </body>
 </html>
