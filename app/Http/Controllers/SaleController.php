@@ -33,82 +33,106 @@ class SaleController extends Controller
     {
         try {
             DB::beginTransaction();
-                if ($request->payment_method === 'card' && !is_string($request->card_reference)) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'La referencia de la tarjeta debe ser una cadena de texto.'
-                    ]);
-                } 
 
-            
-                $data = $request->validate([
-                    'total_amount' => 'required|numeric|min:1',
-                    'payment_method' => 'required|in:cash,card',
-                    'cash_amount' => 'required_if:payment_method,cash|numeric|min:0',
-                    'change_amount' => 'required_if:payment_method,cash|numeric|min:0',
-                    // Hacer que card_reference sea nullable, y solo válido como string cuando el método de pago es 'card'
-                    'card_reference' => 'nullable|required_if:payment_method,card|string|max:255',
-                    'products' => 'required|array|min:1',
-                    'products.*.id' => 'required|exists:products,id',
-                    'products.*.quantity' => 'required|integer|min:1',
-                    'products.*.price' => 'required|numeric|min:0',
+            // Validar el método de pago
+            if ($request->payment_method === 'card' && !is_string($request->card_reference)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La referencia de la tarjeta debe ser una cadena de texto.'
                 ]);
-            
+            }
 
-                $calculatedTotal = 0;
-                foreach ($data['products'] as $item) {
-                    $calculatedTotal += $item['price'] * $item['quantity'];
-                }
+            // Validar los datos de la solicitud
+            $data = $request->validate([
+                'total_amount' => 'required|numeric|min:1',
+                'payment_method' => 'required|in:cash,card',
+                'cash_amount' => 'required_if:payment_method,cash|numeric|min:0',
+                'change_amount' => 'required_if:payment_method,cash|numeric|min:0',
+                'card_reference' => 'nullable|required_if:payment_method,card|string|max:255',
+                'products' => 'required|array|min:1',
+                'products.*.id' => 'required|exists:products,id',
+                'products.*.quantity' => 'required|integer|min:1',
+            ]);
 
-                // Verifica si el total calculado coincide con el total_amount proporcionado
-                if (number_format($calculatedTotal, 2) !== number_format($data['total_amount'], 2)) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'El total calculado no coincide con el total_amount proporcionado.'
-                    ]);
-                }
-                // Crear la venta
-                $sale = Sale::create([
-                    'date' => now(),
-                    'total_amount' => $request->input('total_amount'),
-                    'payment_method' => $request->input('payment_method'),
-                    'cash_amount' => $request->input('cash_amount'),
-                    'change_amount' => $request->input('change_amount'),
-                    'card_reference' => $request->input('card_reference'),
-                ]);
-            
-                foreach ($data['products'] as $item) {
-                    $product = Product::findOrFail($item['id']);
-    
-                    // Validar stock disponible 
-                    if ($product->stock < $item['quantity']) {
-                        return response()->json([
-                                                'success' => false, 
-                                                'message' => "Stock insuficiente para el producto {$product->name}."
-                                                ]);
+            // Validar el total calculado
+            $calculatedTotal = 0;
+
+            foreach ($data['products'] as $item) {
+                $product = Product::findOrFail($item['id']);
+                $quantity = $item['quantity'];
+
+                // Obtener los lotes disponibles (FIFO: ordenados por fecha de ingreso)
+                $availableLots = $product->stockHistory()
+                    ->where('remaining_quantity', '>', 0)
+                    ->orderBy('date_added')
+                    ->get();
+
+                $remainingToSell = $quantity;
+
+                foreach ($availableLots as $lot) {
+                    if ($remainingToSell <= 0) {
+                        break;
                     }
-            
-                    // Reducir stock
-                    $product->decrement('stock', $item['quantity']);
-            
-                    // Crear el detalle de la venta
-                    $totalPrice = $product->price * $item['quantity'];
+
+                    // Calcular cantidad a tomar de este lote
+                    $soldFromLot = min($remainingToSell, $lot->remaining_quantity);
+
+                    // Actualizar cantidad restante en el lote
+                    $lot->remaining_quantity -= $soldFromLot;
+                    $lot->save();
+
+                    // Calcular el subtotal para este lote
+                    $lotTotalPrice = $lot->sale_price * $soldFromLot;
+                    $calculatedTotal += $lotTotalPrice;
+
+                    // Registrar el detalle de la venta
                     SaleDetail::create([
                         'sale_id' => $sale->id,
                         'product_id' => $product->id,
-                        'quantity' => $item['quantity'],
-                        'price' => $product->price,
-                        'total_price' => $totalPrice,
+                        'quantity' => $soldFromLot,
+                        'price' => $lot->sale_price,
+                        'total_price' => $lotTotalPrice,
                     ]);
+
+                    // Reducir cantidad pendiente de vender
+                    $remainingToSell -= $soldFromLot;
                 }
+
+                if ($remainingToSell > 0) {
+                    throw new \Exception("Stock insuficiente para el producto {$product->name}.");
+                }
+
+                // Actualizar el stock total del producto
+                $product->decrement('stock', $quantity);
+            }
+
+            // Verificar si el total calculado coincide con el total proporcionado
+            if (number_format($calculatedTotal, 2) !== number_format($data['total_amount'], 2)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El total calculado no coincide con el total_amount proporcionado.'
+                ]);
+            }
+
+            // Crear la venta
+            $sale = Sale::create([
+                'date' => now(),
+                'total_amount' => $data['total_amount'],
+                'payment_method' => $data['payment_method'],
+                'cash_amount' => $data['cash_amount'],
+                'change_amount' => $data['change_amount'],
+                'card_reference' => $data['card_reference'],
+            ]);
+
             DB::commit();
-        
+
             return response()->json(['success' => true]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }
+
     
 
     public function show($id)

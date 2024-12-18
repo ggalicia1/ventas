@@ -90,7 +90,7 @@ class ProductSeeder extends Seeder
         ];
 
         // Insertar productos
-        foreach ($products as $product) {
+/*         foreach ($products as $product) {
             DB::table('products')->insert([
                 'name' => $product['name'],
                 'description' => $product['description'],
@@ -101,6 +101,6 @@ class ProductSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        }
+        } */
     }
 }

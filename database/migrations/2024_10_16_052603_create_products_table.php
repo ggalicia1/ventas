@@ -19,7 +19,11 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade'); // Relación con categorías
             $table->string('supplier')->nullable();
+            $table->string('barcode')->nullable();
             $table->timestamps();
+            $table->index('barcode');
+            $table->index('supplier');
+            $table->index('name');
         });
     }
 

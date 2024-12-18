@@ -7,6 +7,8 @@ use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Models\Product;
 use App\Models\ProductStockHistory;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -112,7 +114,11 @@ class ProductController extends Controller
     public function showAddStockForm($id)
     {
         $product = Product::findOrFail($id);
-        return view('products.add_stock', compact('product'));
+        $stockHistories = ProductStockHistory::where('product_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(3);
+        
+        return view('products.add_stock', compact('stockHistories', 'product'));
     }
 
 
@@ -124,24 +130,88 @@ class ProductController extends Controller
         ]);
 
         $product = Product::findOrFail($id);
-
-        // Agregar la cantidad al stock actual del producto
-        $product->stock += $request->input('quantity');
-        $product->save();
-
-        // Crear una entrada en el historial de stock
-        ProductStockHistory::create([
-            'product_id' => $product->id,
-            'quantity' => $request->input('quantity'),
-            'date_added' => now(),
-            'purchase_price' => $request->input('purchase_price'),
-            'sale_price' => $request->input('sale_price'),
-            'expiration_date' => $request->input('expiration_date'),
-        ]);
-
-        return redirect()->route('products.index')->with('success', 'Stock añadido exitosamente.');
+        $product->addStock(
+            $request->input('quantity'),
+            $request->input('purchase_price'),
+            $request->input('sale_price'),
+            $request->input('expiration_date')
+        );
+        
+        return $this->showAddStockForm($id);
     }
 
+    public function storeMassiveProducts(Request $request)
+    {
+        // Validar el archivo
+        $request->validate([
+            'products_file' => 'required|mimes:xlsx,xls'
+        ]);
+        //dd($request);
 
+        try {
+            // Leer el archivo Excel
+            $file = $request->file('products_file');
+            $spreadsheet = IOFactory::load($file->getPathname());
+            $worksheet = $spreadsheet->getActiveSheet();
+            $highestRow = $worksheet->getHighestRow();
 
+            // Iniciar transacción
+            DB::beginTransaction();
+
+            // Recorrer las filas del archivo (asumiendo encabezados en la fila 1)
+            for ($row = 2; $row <= $highestRow; $row++) {
+                $name = trim($worksheet->getCell("B$row")->getValue());
+                $description = trim($worksheet->getCell("C$row")->getValue());
+                $categoryId = intval($worksheet->getCell("D$row")->getValue());
+                $distributor = trim($worksheet->getCell("E$row")->getValue());
+                $stockQuantity = trim($worksheet->getCell("F$row")->getValue());
+                $purchase_price = floatval($worksheet->getCell("G$row")->getValue());
+                $sale_price = floatval($worksheet->getCell("H$row")->getValue() ?? 0);
+                //$stockQuantity = intval($worksheet->getCell("G$row")->getValue() ?? 0);
+                $expirationDate = $worksheet->getCell("I$row")->getValue();
+                $barcode = $worksheet->getCell("J$row")->getValue();
+
+                // Verificar valores obligatorios
+                /* if (empty($name) || empty($categoryId)) {
+                    continue; // Saltar filas con datos incompletos
+                } */
+              
+
+                // Crear o actualizar el producto
+                $product = Product::updateOrCreate(
+                    ['name' => $name],
+                    [
+                        'description' => $description,
+                        'price' => $sale_price,
+                        'stock' => $stockQuantity, // Incrementar el stock
+                        'category_id' => $categoryId,
+                        'supplier' => $distributor,
+                        'barcode' => $barcode,
+                    ]
+                );
+                //dd($product);
+                // Registrar en el historial de stock
+                if ($stockQuantity > 0) {
+                    $product->stockHistory()->create([
+                        'quantity' => $stockQuantity,
+                        'remaining_quantity' => $product->stock,
+                        'date_added' => now(),
+                        'purchase_price' => $purchase_price,
+                        'sale_price' => $sale_price,
+                        'expiration_date' => $expirationDate ? \Carbon\Carbon::parse($expirationDate) : null,
+                    ]);
+                }
+            }
+
+            // Confirmar transacción
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Productos importados exitosamente');
+        } catch (\Exception $e) {
+            // Revertir transacción en caso de error
+            DB::rollBack();
+
+            return redirect()->back()->with('error', 'Error al importar productos: ' . $e->getMessage());
+        }
+    }
 }

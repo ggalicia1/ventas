@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Relación con el producto
             $table->integer('quantity'); // Cantidad de stock añadida
+            $table->integer('remaining_quantity')->nullable(); // Cantidad de stock añadida
             $table->date('date_added'); // Fecha de ingreso del stock
             $table->decimal('purchase_price', 8, 2); // Stock entry date
             $table->decimal('sale_price', 8, 2); // Fecha de ingreso del stock

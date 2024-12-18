@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/barcode/{barcode}', [ProductController::class, 'findByBarcode']);
     Route::get('products/{id}/add-stock', [ProductController::class, 'showAddStockForm'])->name('products.addStock');
     Route::post('products/{id}/add-stock', [ProductController::class, 'addProductStock'])->name('products.addStock.post');
+    Route::post('products/masive-stock', [ProductController::class, 'storeMassiveProducts'])->name('products.store.massive');
     
     
     
