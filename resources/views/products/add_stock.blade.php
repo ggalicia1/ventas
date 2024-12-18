@@ -43,6 +43,7 @@
                         <tr>
                             <th scope="col" class="px-6 py-3">Fecha</th>
                             <th scope="col" class="px-6 py-3">Cantidad</th>
+                            <th scope="col" class="px-6 py-3">Cantidad Restante</th>
                             <th scope="col" class="px-6 py-3">Precio de Compra</th>
                             <th scope="col" class="px-6 py-3">Precio de Venta</th>
                             <th scope="col" class="px-6 py-3">Fecha de Vencimiento</th>
@@ -53,6 +54,7 @@
                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                 <td class="px-6 py-4">{{ $history->date_added }}</td>
                                 <td class="px-6 py-4">{{ $history->quantity }}</td>
+                                <td class="px-6 py-4">{{ $history->remaining_quantity }}</td>
                                 <td class="px-6 py-4">{{ number_format($history->purchase_price, 2) }}</td>
                                 <td class="px-6 py-4">{{ number_format($history->sale_price, 2) }}</td>
                                 <td class="px-6 py-4">{{ $history->expiration_date }}</td>

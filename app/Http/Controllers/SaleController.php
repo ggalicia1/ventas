@@ -56,6 +56,16 @@ class SaleController extends Controller
 
             // Validar el total calculado
             $calculatedTotal = 0;
+            
+            // Crear la venta
+            $sale = Sale::create([
+                'date' => now(),
+                'total_amount' => $data['total_amount'],
+                'payment_method' => $data['payment_method'],
+                'cash_amount' => $data['cash_amount'],
+                'change_amount' => $data['change_amount'],
+                'card_reference' => $data['card_reference'],
+            ]);
 
             foreach ($data['products'] as $item) {
                 $product = Product::findOrFail($item['id']);
@@ -114,15 +124,6 @@ class SaleController extends Controller
                 ]);
             }
 
-            // Crear la venta
-            $sale = Sale::create([
-                'date' => now(),
-                'total_amount' => $data['total_amount'],
-                'payment_method' => $data['payment_method'],
-                'cash_amount' => $data['cash_amount'],
-                'change_amount' => $data['change_amount'],
-                'card_reference' => $data['card_reference'],
-            ]);
 
             DB::commit();
 
