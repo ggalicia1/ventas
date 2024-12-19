@@ -23,11 +23,12 @@ class Product extends Model
     {
         return $this->hasMany(ProductStockHistory::class);
     }
-    public function addStock(int $quantity, float $purchasePrice, float $salePrice, $expirationDate = null)
+    public function addStock(int $quantity, int $remaining_quantity, float $purchasePrice, float $salePrice, $expirationDate = null)
     {
         // Registrar en el historial
         $this->stockHistory()->create([
             'quantity' => $quantity,
+	    'remaining_quantity' => $remaining_quantity,
             'purchase_price' => $purchasePrice,
             'sale_price' => $salePrice,
             'date_added' => now(),

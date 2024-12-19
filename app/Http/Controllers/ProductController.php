@@ -132,6 +132,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->addStock(
             $request->input('quantity'),
+            $request->input('quantity'),
             $request->input('purchase_price'),
             $request->input('sale_price'),
             $request->input('expiration_date')
