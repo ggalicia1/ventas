@@ -148,4 +148,72 @@ class SaleController extends Controller
         $pdf = PDF::loadView('sales.receipt', compact('sale'));
         return $pdf->download('recibo_venta_' . $sale->id . '.pdf');
     }
+
+    public function closeSales(Request $request)
+    {
+        $date = Carbon::today();
+        
+        $totalVentasDia = \DB::table('sale_details')
+                            ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
+                            ->whereDate('sales.created_at', $date)
+                            ->sum('sale_details.total_price');
+
+        $cantidadProductosVendidos = \DB::table('sale_details')
+                            ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
+                            ->whereDate('sales.created_at', $date)
+                            ->sum('sale_details.quantity');
+                        
+        $stocks = \DB::table('products')
+                            ->select('products.id', 'products.name', 'products.stock', \DB::raw('COALESCE(SUM(product_stock_history.quantity), 0) AS stock_movements'))
+                            ->leftJoin('product_stock_history', 'product_stock_history.product_id', '=', 'products.id')
+                            ->whereDate('product_stock_history.created_at', '<=', $date)
+                            ->groupBy('products.id', 'products.name', 'products.stock')
+                            ->get();
+        $costoVentasDia = \DB::table('sale_details')
+                            ->join('products', 'products.id', '=', 'sale_details.product_id')
+                            ->join('product_stock_history', 'product_stock_history.product_id', '=', 'products.id')
+                            ->whereDate('sale_details.created_at', $date)
+                            ->sum(\DB::raw('sale_details.quantity * product_stock_history.purchase_price'));
+        
+        // Obtener la cantidad de productos vendidos con efectivo
+        $cantidadProductosEfectivo = \DB::table('sale_details')
+                            ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
+                            ->whereDate('sales.date', $date)
+                            ->where('sales.payment_method', 'cash')  // Filtrar por efectivo
+                            ->sum('sale_details.quantity');  // Sumar la cantidad de productos vendidos con efectivo
+
+// Obtener la cantidad de productos vendidos con tarjeta
+        $cantidadProductosTarjeta = \DB::table('sale_details')
+                        ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
+                        ->whereDate('sales.date', $date)
+                        ->where('sales.payment_method', 'card')  // Filtrar por tarjeta
+                        ->sum('sale_details.quantity');  // Sumar la cantidad de productos vendidos con tarjeta
+
+                        
+                        
+        return view('sales.close', compact('totalVentasDia'
+                                            , 'cantidadProductosVendidos',
+                                         'stocks',
+                                          'costoVentasDia',
+                                          'cantidadProductosEfectivo',
+                                          'cantidadProductosTarjeta',
+                                          'date'
+                                        ));
+
+    }
+
+    public function dailyClosure(Request $request)
+    {
+        $cierreDiario = [
+            'date' => $date->toDateString(),
+            'cash_sales_total' => $totalVentasEfectivo,
+            'cash_sales_quantity' => $cantidadProductosEfectivo,
+            'card_sales_total' => $totalVentasTarjeta,
+            'card_sales_quantity' => $cantidadProductosTarjeta,
+            'total_sales' => $totalVentasEfectivo + $totalVentasTarjeta, // Sumar ambos métodos
+            'total_products_sold' => $cantidadProductosEfectivo + $cantidadProductosTarjeta, // Sumar productos
+        ];
+        DailyClosure::create($cierreDiario);
+        return redirect()->route('sales.close');
+    }
 }

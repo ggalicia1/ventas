@@ -2,6 +2,12 @@
     <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="container mx-auto px-6 py-8">
             <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Cierre</h2>
+                <a href="{{ route('sales.close') }}" class="bg-green-600 text-white px-4 py-2 rounded">
+                    Cierre
+                </a>
+            </div>
+            <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Ventas</h2>
                 <a href="{{ route('sales.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded">
                     Nueva Venta

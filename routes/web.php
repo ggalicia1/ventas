@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     
     
     
+    Route::get('sales/close', [SaleController::class, 'closeSales'])->name('sales.close');
     Route::resource('sales', SaleController::class);
     Route::get('sales/{id}/receipt', [SaleController::class, 'generateReceipt'])->name('sales.receipt');
     
