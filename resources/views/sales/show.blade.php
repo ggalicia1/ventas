@@ -58,6 +58,10 @@
                             <p class="font-medium">{{ $sale->card_reference }}</p>
                         </div>
                         @endif
+                        <div>
+                            <p class="text-gray-600">Fecha y hora:</p>
+                            <p class="font-medium">{{ date('d-m-Y H:i', strtotime($sale->created_at)) }}</p>
+                        </div>
                     </div>
                 </div>
         

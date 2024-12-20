@@ -80,8 +80,9 @@
                     
                             <!-- Sección de Efectivo -->
                             <div id="cashPaymentSection" class="space-y-4">
+
                                 <div>
-                                    <label for="cashAmount" class="block text-gray-700 mb-2">Efectivo recibido:</label>
+                                    <label for="cashAmount" id="lblPay" class="block text-gray-700 mb-2">Efectivo recibido:</label>
                                     <div class="flex items-center">
                                         <span class="text-gray-500 mr-2">Q</span>
                                         <input type="number" id="cashAmount" name="cash_amount" 
@@ -100,16 +101,16 @@
                                     </div>
                                 </div>
                             </div>
-                    
                             <!-- Sección de Tarjeta -->
                             <div id="cardPaymentSection" class="space-y-4 hidden">
                                 <div>
                                     <label for="cardReference" class="block text-gray-700 mb-2">Referencia de transacción:</label>
                                     <input type="text" id="cardReference" name="card_reference" 
-                                           class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Número de referencia">
+                                        class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Número de referencia">
                                 </div>
                             </div>
+                    
                         </div>
                     </div>
         
@@ -424,6 +425,15 @@
 
                 // Obtener el formulario
                 const form = document.getElementById('saleForm');
+                var mountPay;
+                var changePay;
+                if(paymentMethod === 'cash'){
+                    mountPay = document.getElementById('cashAmount').value;
+                    changePay = document.getElementById('changeAmountInput').value;
+                }else{
+                    mountPay = totalAmount;
+                    changePay = 0;
+                }
                 
                 // Crear y enviar el formulario usando fetch
                 fetch(form.action, {
@@ -436,8 +446,8 @@
                         products: selectedProducts,
                         payment_method: paymentMethod,
                         total_amount: totalAmount,
-                        cash_amount: document.getElementById('cashAmount')?.value,
-                        change_amount: document.getElementById('changeAmountInput')?.value,
+                        cash_amount: mountPay,
+                        change_amount: changePay,
                         card_reference: document.getElementById('cardReference')?.value
                     })
                 })
@@ -492,13 +502,16 @@
     function togglePaymentMethod(method) {
         const cashSection = document.getElementById('cashPaymentSection');
         const cardSection = document.getElementById('cardPaymentSection');
+        const lblPay = document.getElementById('lblPay');
         
         if (method === 'cash') {
             cashSection.classList.remove('hidden');
             cardSection.classList.add('hidden');
+            //lblPay.textContent = 'Efectivo recibido:'; // Cambiar texto del label
             calculateChange(); // Recalcular el cambio al cambiar a efectivo
         } else {
             cashSection.classList.add('hidden');
+            //lblPay.textContent = 'Total pagado con tarjeta.'; // Cambiar texto del label
             cardSection.classList.remove('hidden');
         }
     }

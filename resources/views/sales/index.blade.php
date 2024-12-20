@@ -29,7 +29,7 @@
                         @foreach($sales as $sale)
                             <tr>
                                 <td class="border px-4 py-2">{{ $sale->id }}</td>
-                                <td class="border px-4 py-2">{{ $sale->created_at->format('d/m/Y') }}</td>
+                                <td class="border px-4 py-2">{{ $sale->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="border px-4 py-2">Q {{ number_format($sale->details->sum('total_price'), 2) }}</td>
                                 <td class="border px-4 py-2 flex space-x-2">
                                     <a href="{{ route('sales.show', $sale->id) }}" 
