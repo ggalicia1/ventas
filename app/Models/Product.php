@@ -28,7 +28,7 @@ class Product extends Model
         // Registrar en el historial
         $this->stockHistory()->create([
             'quantity' => $quantity,
-	    'remaining_quantity' => $remaining_quantity,
+	        'remaining_quantity' => $remaining_quantity + $this->stock,
             'purchase_price' => $purchasePrice,
             'sale_price' => $salePrice,
             'date_added' => now(),
@@ -39,6 +39,7 @@ class Product extends Model
         $this->increment('stock', $quantity);
 
         // Opcional: Actualizar el precio de venta actual
+        $this->price = $salePrice;
         $this->price = $salePrice;
         $this->save();
     }
