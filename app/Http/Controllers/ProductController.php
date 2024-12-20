@@ -126,7 +126,9 @@ class ProductController extends Controller
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
-            'expiration_date' => 'nullable|date|after:today',
+            'expiration_date' => 'required|date|after:today',
+            'purchase_price' => 'required|integer|min:1',
+            'sale_price' => 'required|integer|min:1',
         ]);
 
         $product = Product::findOrFail($id);

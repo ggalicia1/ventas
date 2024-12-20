@@ -25,12 +25,8 @@
                         <input type="number" id="sale_price" name="sale_price" step="0.01" value="{{ old('sale_price') }}" required class="border rounded-md p-2 w-full">
                     </div>
                     <div class="mb-4">
-                        <label for="date_added" class="block text-sm font-medium text-gray-700">Fecha de Ingreso</label>
-                        <input type="date" name="date_added" id="date_added" class="border p-2 rounded w-full">
-                    </div>
-                    <div class="mb-4">
                         <label for="expiration_date" class="block text-sm font-medium text-gray-700">Fecha de vencimiento</label>
-                        <input type="date" name="expiration_date" id="expiration_date" class="border p-2 rounded w-full">
+                        <input type="date" name="expiration_date" id="expiration_date" class="border p-2 rounded w-full" value="{{ old('expiration_date') }}" required>
                     </div>
                 </div>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Añadir Stock</button>
@@ -52,7 +48,7 @@
                     <tbody>
                         @forelse($stockHistories as $history)
                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <td class="px-6 py-4">{{ $history->date_added }}</td>
+                                <td class="px-6 py-4">{{ date('d-m-Y H:i', strtotime($history->created_at))}}</td>
                                 <td class="px-6 py-4">{{ $history->quantity }}</td>
                                 <td class="px-6 py-4">{{ $history->remaining_quantity }}</td>
                                 <td class="px-6 py-4">{{ number_format($history->purchase_price, 2) }}</td>
