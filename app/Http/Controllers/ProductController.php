@@ -49,6 +49,7 @@ class ProductController extends Controller
             'description' => 'nullable',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
+		'barcode' => 'nullable|string'
         ]);
         //dd($validated_data);
         $this->product_repository->create($validated_data);
@@ -124,13 +125,13 @@ class ProductController extends Controller
 
     public function addProductStock(Request $request, $id)
     {
-        $request->validate([
+/*        $request->validate([
             'quantity' => 'required|integer|min:1',
             'expiration_date' => 'required|date|after:today',
             'purchase_price' => 'required|integer|min:1',
             'sale_price' => 'required|integer|min:1',
         ]);
-
+*/
         $product = Product::findOrFail($id);
         $product->addStock(
             $request->input('quantity'),
