@@ -86,8 +86,12 @@ class ProductController extends Controller
     }
     public function show($id)
     {
-        $this->product_repository->find($id);
-        return redirect()->route('products.index')->with('success', 'Producto eliminado exitosamente.');
+        $product = $this->product_repository->find($id);
+        
+
+        return view('products.show', compact('product'));
+
+        //return redirect()->route('products.index')->with('success', 'Producto encontrado exitosamente.');
     }
 
     public function search($search)
@@ -98,7 +102,7 @@ class ProductController extends Controller
             return $query->where('name', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%");
         })->get();
-
+        
         return response()->json($products);
     }
 

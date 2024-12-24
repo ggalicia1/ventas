@@ -20,7 +20,7 @@
                     <!-- Formulario de búsqueda -->
                     <form method="GET" action="{{ route('products.index') }}" class="mb-6">
                         <div class="flex items-center">
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar productos..." class="border border-gray-300 rounded-md px-4 py-2 w-full" />
+                            <input type="text" id="productSearch" name="search" value="{{ request('search') }}" placeholder="Buscar productos..." class="border border-gray-300 rounded-md px-4 py-2 w-full" />
                             <button type="submit" class="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                                 Buscar
                             </button>
@@ -41,7 +41,7 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($products as $product)
-                                <tr>
+                                <tr class="hover:bg-gray-200">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $product->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $product->description }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Q {{ number_format($product->price, 2) }}</td>
@@ -86,8 +86,67 @@
                 </div>
             </div>
 
-
-                
-
         </div>
 </x-app-layout>
+<script>
+
+    let selectedProducts = []; // Arreglo para almacenar productos seleccionados
+    let barcodeBuffer = ''; // Buffer para almacenar el código de barras
+
+    document.getElementById("productSearch").focus();
+    document.addEventListener('DOMContentLoaded', function() {
+        // Detectar la entrada de códigos de barras automáticamente
+        document.getElementById('productSearch').addEventListener('keydown', function(event) {
+            // Detectar Enter y enviar la búsqueda
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (barcodeBuffer) {
+                    const productSearch = document.getElementById('productSearch');
+                    const searchValue = productSearch.value;
+                    
+                    searchByBarcode(searchValue);
+                    barcodeBuffer = ''; // Limpiar el buffer después de la búsqueda
+                }
+            } else {
+                barcodeBuffer += event.key;
+            }
+        });
+    });
+
+    function searchByBarcode(barcode) {
+        fetch(`/products/barcode/${barcode}`)
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        //alert("No se encontró un producto con este código de barras.");
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'Producto no encontrado',
+                        text: 'No se encontró un producto con este código de barras.',
+                        timer: 1000, // Opcional: Cierra automáticamente después de 3 segundos
+                        showConfirmButton: false // Sin botón de confirmación
+                    });
+                    } else {
+                        throw new Error(`Error en la búsqueda: ${response.statusText}`);
+                    }
+                    return null; // Retornar null para que no se intente procesar un producto inexistente
+                }
+                return response.json();
+            })
+            .then(product => {
+                if (product) { // Solo procesar si se obtuvo un producto válido
+                    window.location.href = `/products/${product.id}`;
+
+                    /* alert(product.id);
+                    selectProduct(product.id, product.name, product.price); */
+                }
+            })
+            .catch(error => console.error('Error:', error))
+            .finally(() => {
+                const productSearch = document.getElementById('productSearch');
+                productSearch.value = ''; // Limpiar el campo
+                productSearch.focus(); 
+            });
+    }
+
+</script>
