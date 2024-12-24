@@ -16,15 +16,18 @@
                         <input type="text" id="name" name="name" value="{{ old('name', $product->name) }}" required class="border rounded-md p-2 w-full">
                         <label for="name" class="text-gray-700">Nombre</label>
                     </div>
-            
                     <div class="input-field">
                         <textarea id="description" name="description" class="materialize-textarea border rounded-md p-2 w-full">{{ old('description', $product->description) }}</textarea>
                         <label for="description" class="text-gray-700">Descripción</label>
                     </div>
             
-                    <div class="input-field">
+{{--                     <div class="input-field">
                         <input type="number" id="price" name="price" step="0.01" value="{{ old('price', $product->price) }}" required class="border rounded-md p-2 w-full">
                         <label for="price" class="text-gray-700">Precio</label>
+                    </div> --}}
+                    <div class="input-field">
+                        <input type="number" id="barcode" name="barcode" value="{{ old('barcode', $product->barcode) }}" required class="border rounded-md p-2 w-full">
+                        <label for="price" class="text-gray-700">Codigo de barras</label>
                     </div>
             
                     <div class="input-field">

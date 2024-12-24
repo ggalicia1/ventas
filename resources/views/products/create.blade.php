@@ -20,12 +20,7 @@
                     <textarea id="description" name="description" class="materialize-textarea border rounded-md p-2 w-full">{{ old('description') }}</textarea>
                     <label for="description" class="text-gray-700">Descripción</label>
                 </div>
-
-                <div class="input-field">
-                    <input type="number" id="price" name="price" step="0.01" value="{{ old('price') }}" required class="border rounded-md p-2 w-full">
-                    <label for="price" class="text-gray-700">Precio</label>
-                </div>
-		<div class="input-field">
+		        <div class="input-field">
                     <input type="text" id="barcode" name="barcode" step="0.01" value="{{ old('barcode') }}"  class="border rounded-md p-2 w-full">
                     <label for="barcode" class="text-gray-700">Codigo de barras</label>
                 </div>

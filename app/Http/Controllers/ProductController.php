@@ -47,9 +47,9 @@ class ProductController extends Controller
         $validated_data = $request->validate([
             'name' => 'required|max:255',
             'description' => 'nullable',
-            'price' => 'required|numeric|min:0',
+            'price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
-		'barcode' => 'nullable|string'
+		    'barcode' => 'nullable|string'
         ]);
         //dd($validated_data);
         $this->product_repository->create($validated_data);
@@ -67,9 +67,10 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $validated_data = $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'nullable',
-            'price' => 'required|numeric|min:0',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            //'price' => 'required|numeric|min:0',
+            'barcode' => 'nullable|integer',
             'category_id' => 'required|exists:categories,id',
         ]);
 
