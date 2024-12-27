@@ -51,6 +51,8 @@
                                 <th class="px-4 py-2 text-left text-gray-600">Producto</th>
                                 <th class="px-4 py-2 text-left text-gray-600">Stock Actual</th>
                                 <th class="px-4 py-2 text-left text-gray-600">Movimientos</th>
+                                <th class="px-4 py-2 text-left text-gray-600">Precio</th>
+                                <th class="px-4 py-2 text-left text-gray-600">Total vendido</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,7 +60,9 @@
                                 <tr class="border-b">
                                     <td class="px-4 py-2">{{ $stock->name }}</td>
                                     <td class="px-4 py-2">{{ $stock->stock }}</td>
-                                    <td class="px-4 py-2">{{ $stock->stock_movements }}</td>
+                                    <td class="px-4 py-2">{{ $stock->total_sold }}</td>
+                                    <td class="px-4 py-2">Q {{ number_format($stock->price, 2) }}</td>
+                                    <td class="px-4 py-2">Q {{ number_format($stock->price * $stock->total_sold, 2) }}</td>
                                 </tr>
                             @empty
                                 <tr>

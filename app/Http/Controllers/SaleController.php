@@ -164,10 +164,17 @@ class SaleController extends Controller
                             ->sum('sale_details.quantity');
                         
         $stocks = \DB::table('products')
-                            ->select('products.id', 'products.name', 'products.stock', \DB::raw('COALESCE(SUM(product_stock_history.quantity), 0) AS stock_movements'))
-                            ->leftJoin('product_stock_history', 'product_stock_history.product_id', '=', 'products.id')
-                            ->whereDate('product_stock_history.created_at', '<=', $date)
+                            ->select(
+                                'products.id',
+                                'products.name',
+                                'products.price',
+                                'products.stock',
+                                \DB::raw('COALESCE(SUM(sale_details.quantity), 0) AS total_sold')
+                            )
+                            ->join('sale_details', 'sale_details.product_id', '=', 'products.id') // Relación con sale_details
+                            ->whereDate('sale_details.created_at', '=', $date) // Filtrar por la fecha actual
                             ->groupBy('products.id', 'products.name', 'products.stock')
+                            ->havingRaw('total_sold > 0') // Asegurar que hubo movimiento
                             ->get();
         $costoVentasDia = \DB::table('sale_details')
                             ->join('products', 'products.id', '=', 'sale_details.product_id')
