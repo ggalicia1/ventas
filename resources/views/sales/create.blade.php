@@ -235,15 +235,30 @@
     
     function selectProduct(id, name, price) {
         price = parseFloat(price);
-
         if (isNaN(price)) {
             alert("El precio del producto no es válido.");
             return;
         }
 
         // Verificar si el producto ya fue seleccionado
-        if (selectedProducts.some(product => product.id === id)) {
-            alert("Este producto ya ha sido seleccionado.");
+        const existingProduct = selectedProducts.find(product => product.id === id);
+        if (existingProduct) {
+            // Si el producto ya existe, incrementar la cantidad en 1
+            existingProduct.quantity += 1;
+            
+            // Actualizar el input de cantidad en la interfaz
+            const quantityInput = document.querySelector(`#product-row-${id} input[type="number"]`);
+            quantityInput.value = existingProduct.quantity;
+            
+            // Actualizar el input hidden
+            document.querySelector(`#quantity-${id}`).value = existingProduct.quantity;
+            
+            // Actualizar el total de la línea
+            const totalCell = document.querySelector(`#total-${id}`);
+            totalCell.textContent = `Q ${(price * existingProduct.quantity).toFixed(2)}`;
+            
+            // Actualizar el total general
+            calculateTotal();
             return;
         }
 
@@ -251,18 +266,16 @@
         selectedProducts.push({ id, name, price, quantity: quantityInput });
 
         const newRow = document.createElement('tr');
-                newRow.addEventListener('mouseover', function() {
-            newRow.style.backgroundColor = '#DDDFE3'; // Cambia el color cuando pasa el mouse
-            //newRow.style.color = '#FFFFFF';
+        
+        newRow.addEventListener('mouseover', function() {
+            newRow.style.backgroundColor = '#DDDFE3';
         });
 
         newRow.addEventListener('mouseout', function() {
-            newRow.style.backgroundColor = ''; // Restaura el color cuando se quita el mouse
-            //newRow.style.color = '#000000';
-
+            newRow.style.backgroundColor = '';
         });
         
-        newRow.id = `product-row-${id}`; // Añadir ID a la fila para poder eliminarla después
+        newRow.id = `product-row-${id}`;
         newRow.innerHTML = `
             <td class="px-4 py-2">${name}</td>
             <td class="px-4 py-2">
@@ -277,17 +290,17 @@
             <td class="px-4 py-2" id="total-${id}">Q ${(price * quantityInput).toFixed(2)}</td>
             <td class="px-4 py-2 border-b border-gray-300">
                 <button type="button" 
-                        class="text-red-700 hover:text-red-300 focus:outline-none"
-                        onclick="removeProduct(${id})">
+                    class="text-red-700 hover:text-red-300 focus:outline-none"
+                    onclick="removeProduct(${id})">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
             </td>
-            `;
+        `;
         document.getElementById('selected-product-list').appendChild(newRow);
 
-        calculateTotal(); // Actualizar el total general
+        calculateTotal();
     }
 
     function removeProduct(productId) {
