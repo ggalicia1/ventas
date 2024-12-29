@@ -37,23 +37,37 @@
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
+                            <th scope="col" class="px-6 py-3">ID</th>
                             <th scope="col" class="px-6 py-3">Fecha</th>
                             <th scope="col" class="px-6 py-3">Cantidad</th>
                             <th scope="col" class="px-6 py-3">Cantidad Restante</th>
                             <th scope="col" class="px-6 py-3">Precio de Compra</th>
                             <th scope="col" class="px-6 py-3">Precio de Venta</th>
                             <th scope="col" class="px-6 py-3">Fecha de Vencimiento</th>
+                            <th scope="col" class="px-6 py-3">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($stockHistories as $history)
                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                <td class="px-6 py-4">{{ $history->id}}</td>
                                 <td class="px-6 py-4">{{ date('d-m-Y H:i', strtotime($history->created_at))}}</td>
                                 <td class="px-6 py-4">{{ $history->quantity }}</td>
                                 <td class="px-6 py-4">{{ $history->remaining_quantity }}</td>
-                                <td class="px-6 py-4">{{ number_format($history->purchase_price, 2) }}</td>
+                                <td class="px-6 py-4">{{ $history->purchase_price }}</td>
                                 <td class="px-6 py-4">{{ number_format($history->sale_price, 2) }}</td>
                                 <td class="px-6 py-4">{{ $history->expiration_date }}</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex space-x-2">
+                                        <button 
+                                            onclick="deleteStockHistory({{ $history->id }})"
+                                            class="px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -70,3 +84,58 @@
         </div>
     </div>
 </x-app-layout>
+
+<script>
+    async function deleteStockHistory(productId) {
+        const confirmation = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'No podrás revertir esta acción.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!confirmation.isConfirmed) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`{{ url('products/delete-stock') }}/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Eliminado',
+                    text: result.message,
+                    confirmButtonText: 'Aceptar'
+                });
+                // Recargar la página
+                location.reload();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: result.message,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
+        } catch (error) {
+            console.error('Error al eliminar el producto:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un error al intentar eliminar el producto.',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    }
+</script>

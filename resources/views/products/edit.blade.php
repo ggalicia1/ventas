@@ -26,6 +26,10 @@
                         <label for="price" class="text-gray-700">Precio</label>
                     </div> --}}
                     <div class="input-field">
+                        <input type="number" id="stock" name="stock" value="{{ old('stock', $product->stock) }}" required class="border rounded-md p-2 w-full">
+                        <label for="price" class="text-gray-700">Stock</label>
+                    </div>
+                    <div class="input-field">
                         <input type="number" id="barcode" name="barcode" value="{{ old('barcode', $product->barcode) }}" required class="border rounded-md p-2 w-full">
                         <label for="price" class="text-gray-700">Codigo de barras</label>
                     </div>

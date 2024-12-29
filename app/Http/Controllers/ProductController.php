@@ -25,10 +25,12 @@ class ProductController extends Controller
         $search = $request->input('search');
 
         $products = Product::when($search, function ($query, $search) {
-            return $query->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
-        })->paginate(5);
+            return $query->where('products.name', 'like', "%{$search}%")
+                        ->orWhere('products.description', 'like', "%{$search}%");
+        })
+        ->paginate(5);
 
+        
         return view('products.index', compact('products', 'search'));
         /* 
         $products = Product::with('category')->paginate(6); // 10 productos por página
@@ -70,6 +72,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             //'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|integer',
             'barcode' => 'nullable|integer',
             'category_id' => 'required|exists:categories,id',
         ]);
@@ -223,4 +226,45 @@ class ProductController extends Controller
             return redirect()->back()->with('error', 'Error al importar productos: ' . $e->getMessage());
         }
     }
+
+    public function deleteStockHistory($id)
+    {
+        try {
+            DB::beginTransaction();
+    
+            $stockHistory = ProductStockHistory::find($id);
+            if (!$stockHistory) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Historial de stock no encontrado.'
+                ], 404);
+            }
+    
+            $product = Product::findOrFail($stockHistory->product_id);
+    
+            // Actualizar el stock del producto
+            $product->stock = $product->stock - $stockHistory->quantity;
+            $product->save();
+    
+            // Eliminar el historial de stock
+            $stockHistory->delete();
+    
+            DB::commit();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Historial de stock eliminado exitosamente.'
+            ], 200);
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'Hubo un error al intentar eliminar el historial de stock.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
 }
