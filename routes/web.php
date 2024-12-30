@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ExportController;
 
 
 require __DIR__.'/auth.php';
@@ -44,5 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('sales/{id}/receipt', [SaleController::class, 'generateReceipt'])->name('sales.receipt');
     
     Route::get('/reports/sales', [ReportController::class, 'index'])->name('reports.sales.index');
+
+    Route::get('/export-products-stock', [ExportController::class, 'exportProductsStock'])->name('export.products_stock');
 });
 

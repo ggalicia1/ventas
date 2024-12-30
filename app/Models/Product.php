@@ -21,8 +21,9 @@ class Product extends Model
 
     public function stockHistory()
     {
-        return $this->hasMany(ProductStockHistory::class);
+        return $this->hasMany(ProductStockHistory::class, 'product_id');
     }
+
     public function addStock(int $quantity, int $remaining_quantity, float $purchasePrice, float $salePrice, $expirationDate = null)
     {
         // Registrar en el historial
@@ -54,5 +55,11 @@ class Product extends Model
         }
         $this->decrement('stock', $quantity);
     }
+
+    public function latestStockHistory()
+    {
+        return $this->hasOne(ProductStockHistory::class, 'product_id')->latest('date_added');
+    }
+
     
 }
