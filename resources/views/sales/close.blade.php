@@ -7,6 +7,12 @@
 
     <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="container mx-auto px-6 py-8">
+            <button 
+                onclick="showCloseDialog()"
+                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+                Cerrar Ventas del Día
+            </button>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Tarjeta de Ventas Totales -->
                 <div class="bg-white rounded-lg p-6 shadow">
@@ -76,3 +82,59 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+    function showCloseDialog() {
+        Swal.fire({
+            title: '¿Cerrar ventas del día?',
+            text: 'Esta acción cerrará las ventas del día actual',
+            icon: 'warning',
+            input: 'textarea',
+            inputLabel: 'Comentarios de cierre',
+            inputPlaceholder: 'Ingrese comentarios adicionales...',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cerrar ventas',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Send data to backend
+                fetch('/sales-close', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        comments: result.value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            '¡Ventas Cerradas!',
+                            'Las ventas del día han sido cerradas exitosamente.',
+                            'success'
+                        ).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            'Hubo un problema al cerrar las ventas.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    Swal.fire(
+                        'Error',
+                        'Hubo un problema al procesar la solicitud.',
+                        'error'
+                    );
+                });
+            }
+        });
+    }
+</script>

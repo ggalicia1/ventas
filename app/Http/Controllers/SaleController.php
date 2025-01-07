@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\Product;
+use App\Models\DailyClosures;
 use PDF;
 use Carbon\Carbon;
 use DB;
@@ -176,11 +177,15 @@ class SaleController extends Controller
                             ->groupBy('products.id', 'products.name', 'products.stock')
                             ->havingRaw('total_sold > 0') // Asegurar que hubo movimiento
                             ->get();
-        $costoVentasDia = \DB::table('sale_details')
+$costoVentasDia = \DB::table('sale_details')
                             ->join('products', 'products.id', '=', 'sale_details.product_id')
-                            ->join('product_stock_history', 'product_stock_history.product_id', '=', 'products.id')
+                            ->join(
+                                \DB::raw('(SELECT product_id, purchase_price FROM product_stock_history WHERE id IN (SELECT MAX(id) FROM product_stock_history GROUP BY product_id)) AS latest_stock'),
+                                'latest_stock.product_id', '=', 'products.id'
+                            )
                             ->whereDate('sale_details.created_at', $date)
-                            ->sum(\DB::raw('sale_details.quantity * product_stock_history.purchase_price'));
+                            ->sum(\DB::raw('sale_details.quantity * latest_stock.purchase_price'));
+                        
         
         // Obtener la cantidad de productos vendidos con efectivo
         $cantidadProductosEfectivo = \DB::table('sale_details')
@@ -210,17 +215,69 @@ class SaleController extends Controller
     }
 
     public function dailyClosure(Request $request)
-    {
-        $cierreDiario = [
-            'date' => $date->toDateString(),
-            'cash_sales_total' => $totalVentasEfectivo,
-            'cash_sales_quantity' => $cantidadProductosEfectivo,
-            'card_sales_total' => $totalVentasTarjeta,
-            'card_sales_quantity' => $cantidadProductosTarjeta,
-            'total_sales' => $totalVentasEfectivo + $totalVentasTarjeta, // Sumar ambos métodos
-            'total_products_sold' => $cantidadProductosEfectivo + $cantidadProductosTarjeta, // Sumar productos
-        ];
-        DailyClosure::create($cierreDiario);
-        return redirect()->route('sales.close');
+    { //dd($request);
+        try {
+            $date = Carbon::today();
+    
+            // Calcular ventas en efectivo
+            $cashSales = \DB::table('sale_details')
+                ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
+                ->whereDate('sales.created_at', $date)
+                ->where('sales.payment_method', 'cash')
+                ->select(
+                    \DB::raw('SUM(sale_details.total_price) as total'),
+                    \DB::raw('SUM(sale_details.quantity) as quantity')
+                )
+                ->first();
+    
+            // Calcular ventas con tarjeta
+            $cardSales = \DB::table('sale_details')
+                ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
+                ->whereDate('sales.created_at', $date)
+                ->where('sales.payment_method', 'card')
+                ->select(
+                    \DB::raw('SUM(sale_details.total_price) as total'),
+                    \DB::raw('SUM(sale_details.quantity) as quantity')
+                )
+                ->first();
+    
+            // Preparar los datos para el cierre diario
+            $dailyClosureData = [
+                'date' => $date->toDateString(),
+                'cash_sales_total' => $cashSales->total ?? 0,
+                'cash_sales_quantity' => $cashSales->quantity ?? 0,
+                'card_sales_total' => $cardSales->total ?? 0,
+                'card_sales_quantity' => $cardSales->quantity ?? 0,
+                'total_sales' => ($cashSales->total ?? 0) + ($cardSales->total ?? 0),
+                'total_products_sold' => ($cashSales->quantity ?? 0) + ($cardSales->quantity ?? 0),
+                'comments' => $request->input('comments')
+            ];
+    
+            // Verificar si ya existe un cierre para esta fecha
+            $existingClosure = DailyClosures::whereDate('date', $date)->first();
+            
+            if ($existingClosure) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ya existe un cierre para la fecha ' . $date->format('d/m/Y')
+                ]);
+            }
+    
+            // Crear el cierre diario
+            DailyClosures::create($dailyClosureData);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Cierre diario creado exitosamente',
+                'data' => $dailyClosureData
+            ]);
+    
+        } catch (\Exception $e) {
+            \Log::error('Error en cierre diario: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al procesar el cierre diario: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

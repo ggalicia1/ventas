@@ -14,7 +14,9 @@ class DailyClosures extends Model
         'card_sales_total', 
         'card_sales_quantity', 
         'total_sales', 
-        'total_products_sold'];
+        'total_products_sold',
+        'comments'
+    ];
 
 }
     

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('card_sales_quantity'); // 'cantidad_productos_tarjeta' -> 'card_sales_quantity'
             $table->decimal('total_sales', 10, 2); // 'total_ventas' -> 'total_sales'
             $table->integer('total_products_sold'); // 'cantidad_productos_vendidos' -> 'total_products_sold'
+            $table->string('comments')->nullable();
             $table->timestamps(); // created_at, updated_at
         });
     }
