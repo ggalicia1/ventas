@@ -164,20 +164,29 @@ class SaleController extends Controller
                             ->whereDate('sales.created_at', $date)
                             ->sum('sale_details.quantity');
                         
-        $stocks = \DB::table('products')
+                            $stocks = \DB::table('products')
                             ->select(
                                 'products.id',
                                 'products.name',
-                                'products.price',
+                                'products.price as sale_price', // Precio de venta
                                 'products.stock',
-                                \DB::raw('COALESCE(SUM(sale_details.quantity), 0) AS total_sold')
+                                \DB::raw('COALESCE(SUM(sale_details.quantity), 0) AS total_sold'),
+                                \DB::raw('COALESCE((
+                                    SELECT purchase_price 
+                                    FROM product_stock_history 
+                                    WHERE product_stock_history.product_id = products.id 
+                                    ORDER BY product_stock_history.created_at DESC 
+                                    LIMIT 1
+                                ), 0) AS purchase_price') // Subconsulta para obtener el precio de compra más reciente
                             )
                             ->join('sale_details', 'sale_details.product_id', '=', 'products.id') // Relación con sale_details
                             ->whereDate('sale_details.created_at', '=', $date) // Filtrar por la fecha actual
-                            ->groupBy('products.id', 'products.name', 'products.stock')
+                            ->groupBy('products.id', 'products.name', 'products.stock') // Agrupar por los campos correspondientes
                             ->havingRaw('total_sold > 0') // Asegurar que hubo movimiento
                             ->get();
-$costoVentasDia = \DB::table('sale_details')
+                        
+
+        $costoVentasDia = \DB::table('sale_details')
                             ->join('products', 'products.id', '=', 'sale_details.product_id')
                             ->join(
                                 \DB::raw('(SELECT product_id, purchase_price FROM product_stock_history WHERE id IN (SELECT MAX(id) FROM product_stock_history GROUP BY product_id)) AS latest_stock'),
