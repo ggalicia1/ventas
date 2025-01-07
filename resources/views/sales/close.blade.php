@@ -60,10 +60,25 @@
                                 <th class="px-4 py-2 text-left text-gray-600">Precio de compra</th>
                                 <th class="px-4 py-2 text-left text-gray-600">Precio</th>
                                 <th class="px-4 py-2 text-left text-gray-600">Total vendido</th>
+                                <th class="px-4 py-2 text-left text-gray-600">Total invertido</th>
+                                <th class="px-4 py-2 text-left text-green-600">Diferencia o ganancia</th>
                             </tr>
                         </thead>
+                            @php
+                                $purchase_price = 0;
+                                $sales_total = 0;
+                                $diferencia = 0;
+                            @endphp
                         <tbody>
                             @forelse($stocks as $stock)
+                            @php
+                                $total_purchase  = $stock->total_sold * $stock->purchase_price;
+                                $purchase_price += $total_purchase;
+                                $total_sale  = $stock->total_sold * $stock->sale_price ;
+                                $sales_total += $total_sale;
+                                $total_win  = (($stock->sale_price * $stock->total_sold) - ($stock->purchase_price * $stock->total_sold));
+                                $diferencia += $total_win;
+                            @endphp
                                 <tr class="border-b">
                                     <td class="px-4 py-2">{{ $stock->name }}</td>
                                     <td class="px-4 py-2">{{ $stock->stock }}</td>
@@ -71,12 +86,24 @@
                                     <td class="px-4 py-2">{{ $stock->purchase_price }}</td>
                                     <td class="px-4 py-2">Q {{ number_format($stock->sale_price, 2) }}</td>
                                     <td class="px-4 py-2">Q {{ number_format($stock->sale_price * $stock->total_sold, 2) }}</td>
+                                    <td class="px-4 py-2">Q {{ number_format($stock->purchase_price * $stock->total_sold, 2) }}</td>
+                                    <td class="px-4 py-2 text-green-600">Q {{ number_format((($stock->sale_price * $stock->total_sold) - ($stock->purchase_price * $stock->total_sold)), 2) }}</td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="3" class="px-4 py-2 text-center">No hay productos en el inventario.</td>
                                 </tr>
                             @endforelse
+                            <tr class="border-b">
+                                <td class="px-4 py-2">{{ '-----' }}</td>
+                                <td class="px-4 py-2">{{ '-----' }}</td>
+                                <td class="px-4 py-2">{{ '-----' }}</td>
+                                <td class="px-4 py-2">{{ '-----' }}</td>
+                                <td class="px-4 py-2">{{ '-----' }}</td>
+                                <td class="px-4 py-2"><b>Q {{ number_format($sales_total, 2) }}</b></td>
+                                <td class="px-4 py-2"><b>Q {{ number_format($purchase_price, 2) }}</b></td>
+                                <td class="px-4 py-2 text-green-600"><b>Q {{ number_format($diferencia, 2) }}</b></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
