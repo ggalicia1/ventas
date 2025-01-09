@@ -18,8 +18,12 @@ class SaleController extends Controller
 
     public function index()
     {
+        $latestDailyClosure = DailyClosures::latest()->first();
+
+        $date = Carbon::now();
+        $latestCreationDate = $latestDailyClosure->created_at;
         $sales = Sale::with('details.product')
-                                            ->whereDate('created_at', Carbon::today())
+                                            ->whereBetween('created_at', [$latestCreationDate, $date])
                                             ->paginate(3);
         return view('sales.index', compact('sales'));
     }
@@ -152,16 +156,21 @@ class SaleController extends Controller
 
     public function closeSales(Request $request)
     {
-        $date = Carbon::today();
+        $latestDailyClosure = DailyClosures::latest()->first();
+
+        $date = Carbon::now();
+        $latestCreationDate = $latestDailyClosure->created_at;
+        //dd($latestCreationDate, $date);
+
         
         $totalVentasDia = \DB::table('sale_details')
                             ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
-                            ->whereDate('sales.created_at', $date)
+                            ->whereBetween('sales.created_at', [$latestCreationDate, $date])
                             ->sum('sale_details.total_price');
 
         $cantidadProductosVendidos = \DB::table('sale_details')
                             ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
-                            ->whereDate('sales.created_at', $date)
+                            ->whereBetween('sales.created_at', [$latestCreationDate, $date])
                             ->sum('sale_details.quantity');
                         
         $stocks = \DB::table('products')
@@ -180,7 +189,8 @@ class SaleController extends Controller
                                 ), 0) AS purchase_price') // Subconsulta para obtener el precio de compra más reciente
                             )
                             ->join('sale_details', 'sale_details.product_id', '=', 'products.id') // Relación con sale_details
-                            ->whereDate('sale_details.created_at', '=', $date) // Filtrar por la fecha actual
+                            //->whereDate('sale_details.created_at', '=', $date) // Filtrar por la fecha actual
+                            ->whereBetween('sale_details.created_at', [$latestCreationDate, $date])
                             ->groupBy('products.id', 'products.name', 'products.stock') // Agrupar por los campos correspondientes
                             ->havingRaw('total_sold > 0') // Asegurar que hubo movimiento
                             ->get();
@@ -208,21 +218,23 @@ class SaleController extends Controller
                                 \DB::raw('(SELECT product_id, purchase_price FROM product_stock_history WHERE id IN (SELECT MAX(id) FROM product_stock_history GROUP BY product_id)) AS latest_stock'),
                                 'latest_stock.product_id', '=', 'products.id'
                             )
-                            ->whereDate('sale_details.created_at', $date)
+                            //->whereDate('sale_details.created_at', $date)
+                            ->whereBetween('sale_details.created_at', [$latestCreationDate, $date])
                             ->sum(\DB::raw('sale_details.quantity * latest_stock.purchase_price'));
                         
         
         // Obtener la cantidad de productos vendidos con efectivo
         $cantidadProductosEfectivo = \DB::table('sale_details')
                             ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
-                            ->whereDate('sales.date', $date)
+                            //->whereDate('sales.date', $date)
+                            ->whereBetween('sales.created_at', [$latestCreationDate, $date])
                             ->where('sales.payment_method', 'cash')  // Filtrar por efectivo
                             ->sum('sale_details.quantity');  // Sumar la cantidad de productos vendidos con efectivo
 
 // Obtener la cantidad de productos vendidos con tarjeta
         $cantidadProductosTarjeta = \DB::table('sale_details')
                         ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
-                        ->whereDate('sales.date', $date)
+                        ->whereBetween('sales.created_at', [$latestCreationDate, $date])
                         ->where('sales.payment_method', 'card')  // Filtrar por tarjeta
                         ->sum('sale_details.quantity');  // Sumar la cantidad de productos vendidos con tarjeta
 
@@ -323,7 +335,7 @@ class SaleController extends Controller
             ];
     
             // Verificar si ya existe un cierre para esta fecha
-            $existingClosure = DailyClosures::whereDate('date', $date)->first();
+            /* $existingClosure = DailyClosures::whereDate('date', $date)->first();
             
             if ($existingClosure) {
                 return response()->json([
@@ -331,7 +343,7 @@ class SaleController extends Controller
                     'message' => 'Ya existe un cierre para la fecha ' . $date->format('d/m/Y')
                 ]);
             }
-    
+     */
             // Crear el cierre diario
             DailyClosures::create($dailyClosureData);
     
