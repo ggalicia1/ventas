@@ -164,7 +164,7 @@ class SaleController extends Controller
                             ->whereDate('sales.created_at', $date)
                             ->sum('sale_details.quantity');
                         
-                            $stocks = \DB::table('products')
+        $stocks = \DB::table('products')
                             ->select(
                                 'products.id',
                                 'products.name',
@@ -184,8 +184,24 @@ class SaleController extends Controller
                             ->groupBy('products.id', 'products.name', 'products.stock') // Agrupar por los campos correspondientes
                             ->havingRaw('total_sold > 0') // Asegurar que hubo movimiento
                             ->get();
-                        
-
+        // Inicializar variables para las sumas
+        $purchase_price = 0;
+        $sales_total = 0;
+        $diferencia = 0;
+        
+        // Recorrer los productos en $stocks para calcular los totales
+        foreach ($stocks as $stock) {
+            $total_purchase = $stock->total_sold * $stock->purchase_price;
+            $purchase_price += $total_purchase;
+    
+            $total_sale = $stock->total_sold * $stock->sale_price;
+            $sales_total += $total_sale;
+    
+            $total_win = $total_sale - $total_purchase;
+            $diferencia += $total_win;
+        }
+    // Verificar que los cálculos no sean 0
+    //dd($stocks, $purchase_price, $sales_total, $diferencia);
         $costoVentasDia = \DB::table('sale_details')
                             ->join('products', 'products.id', '=', 'sale_details.product_id')
                             ->join(
@@ -212,19 +228,23 @@ class SaleController extends Controller
 
                         
                         
-        return view('sales.close', compact('totalVentasDia'
-                                            , 'cantidadProductosVendidos',
-                                         'stocks',
-                                          'costoVentasDia',
-                                          'cantidadProductosEfectivo',
-                                          'cantidadProductosTarjeta',
-                                          'date'
+        return view('sales.close', compact('totalVentasDia',
+                                            'cantidadProductosVendidos',
+                                            'stocks',
+                                            'costoVentasDia',
+                                            'cantidadProductosEfectivo',
+                                            'cantidadProductosTarjeta',
+                                            'date',            
+                                            'purchase_price',  // Pasar el total calculado del precio de compra
+                                            'sales_total',     // Pasar el total de ventas calculado
+                                            'diferencia'       // Pasar la diferencia calculada
                                         ));
 
     }
 
     public function dailyClosure(Request $request)
-    { //dd($request);
+    { 
+          
         try {
             $date = Carbon::today();
     
@@ -249,6 +269,42 @@ class SaleController extends Controller
                     \DB::raw('SUM(sale_details.quantity) as quantity')
                 )
                 ->first();
+                $stocks = \DB::table('products')
+                ->select(
+                    'products.id',
+                    'products.name',
+                    'products.price as sale_price', // Precio de venta
+                    'products.stock',
+                    \DB::raw('COALESCE(SUM(sale_details.quantity), 0) AS total_sold'),
+                    \DB::raw('COALESCE((
+                        SELECT purchase_price 
+                        FROM product_stock_history 
+                        WHERE product_stock_history.product_id = products.id 
+                        ORDER BY product_stock_history.created_at DESC 
+                        LIMIT 1
+                    ), 0) AS purchase_price') // Subconsulta para obtener el precio de compra más reciente
+                )
+                ->join('sale_details', 'sale_details.product_id', '=', 'products.id') // Relación con sale_details
+                ->whereDate('sale_details.created_at', '=', $date) // Filtrar por la fecha actual
+                ->groupBy('products.id', 'products.name', 'products.stock') // Agrupar por los campos correspondientes
+                ->havingRaw('total_sold > 0') // Asegurar que hubo movimiento
+                ->get();
+            // Inicializar variables para las sumas
+            $purchase_price = 0;
+            $sales_total = 0;
+            $difference = 0;
+            
+            // Loop through the products in $stocks to calculate the totals
+            foreach ($stocks as $stock) {
+                $total_purchase = $stock->total_sold * $stock->purchase_price;
+                $purchase_price += $total_purchase;  // Total purchase price or investment
+            
+                $total_sale = $stock->total_sold * $stock->sale_price;
+                $sales_total += $total_sale;  // Total sales
+            
+                $total_win = $total_sale - $total_purchase;  // The difference between total sales and total purchase (profit)
+                $difference += $total_win;
+            }
     
             // Preparar los datos para el cierre diario
             $dailyClosureData = [
@@ -259,7 +315,11 @@ class SaleController extends Controller
                 'card_sales_quantity' => $cardSales->quantity ?? 0,
                 'total_sales' => ($cashSales->total ?? 0) + ($cardSales->total ?? 0),
                 'total_products_sold' => ($cashSales->quantity ?? 0) + ($cardSales->quantity ?? 0),
-                'comments' => $request->input('comments')
+                'comments' => $request->input('comments'),
+                'surplus' => $request->input('surplus'),
+                'purchase_price' => $purchase_price,
+                'sales_total' => $sales_total,
+                'difference' => $difference,
             ];
     
             // Verificar si ya existe un cierre para esta fecha

@@ -21,6 +21,10 @@ return new class extends Migration
             $table->decimal('total_sales', 10, 2); // 'total_ventas' -> 'total_sales'
             $table->integer('total_products_sold'); // 'cantidad_productos_vendidos' -> 'total_products_sold'
             $table->string('comments')->nullable();
+            $table->integer('surplus');
+            $table->decimal('purchase_price', 10, 2);
+            $table->decimal('sales_total', 10, 2);
+            $table->decimal('difference', 10, 2);
             $table->timestamps(); // created_at, updated_at
         });
     }

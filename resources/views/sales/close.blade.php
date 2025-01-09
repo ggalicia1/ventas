@@ -64,21 +64,8 @@
                                 <th class="px-4 py-2 text-left text-green-600">Diferencia o ganancia</th>
                             </tr>
                         </thead>
-                            @php
-                                $purchase_price = 0;
-                                $sales_total = 0;
-                                $diferencia = 0;
-                            @endphp
                         <tbody>
                             @forelse($stocks as $stock)
-                            @php
-                                $total_purchase  = $stock->total_sold * $stock->purchase_price;
-                                $purchase_price += $total_purchase;
-                                $total_sale  = $stock->total_sold * $stock->sale_price ;
-                                $sales_total += $total_sale;
-                                $total_win  = (($stock->sale_price * $stock->total_sold) - ($stock->purchase_price * $stock->total_sold));
-                                $diferencia += $total_win;
-                            @endphp
                                 <tr class="border-b">
                                     <td class="px-4 py-2">{{ $stock->name }}</td>
                                     <td class="px-4 py-2">{{ $stock->stock }}</td>
@@ -94,6 +81,7 @@
                                     <td colspan="3" class="px-4 py-2 text-center">No hay productos en el inventario.</td>
                                 </tr>
                             @endforelse
+                        
                             <tr class="border-b">
                                 <td class="px-4 py-2">{{ '-----' }}</td>
                                 <td class="px-4 py-2">{{ '-----' }}</td>
@@ -105,6 +93,7 @@
                                 <td class="px-4 py-2 text-green-600"><b>Q {{ number_format($diferencia, 2) }}</b></td>
                             </tr>
                         </tbody>
+                        
                     </table>
                 </div>
             </div>
@@ -112,58 +101,97 @@
     </div>
 </x-app-layout>
 <script>
-    function showCloseDialog() {
-        Swal.fire({
-            title: '¿Cerrar ventas del día?',
-            text: 'Esta acción cerrará las ventas del día actual',
-            icon: 'warning',
-            input: 'textarea',
-            inputLabel: 'Comentarios de cierre',
-            inputPlaceholder: 'Ingrese comentarios adicionales...',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, cerrar ventas',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Send data to backend
-                fetch('/sales-close', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        comments: result.value
-                    })
+function showCloseDialog() {
+    Swal.fire({
+        title: '¿Cerrar ventas del día?',
+        text: 'Esta acción cerrará las ventas del día actual',
+        icon: 'warning',
+        html: `
+            <div class="flex flex-col space-y-4 w-full p-4">
+                <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Sobrante de dinero</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-0 flex items-center text-gray-500">Q</span>
+                        <input 
+                            type="number" 
+                            id="swalSurplus" 
+                            class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="0.00" 
+                            step="0.01"
+                            min="0"
+                        >
+                    </div>
+                </div>
+                <div class="w-full mx-auto">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Comentarios de cierre</label>
+                    <textarea 
+                        id="swalComments" 
+                        class="w-full block px-4 py-6 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[80%] resize-none"
+                        placeholder="Ingrese comentarios adicionales..."
+                    ></textarea>
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, cerrar ventas',
+        cancelButtonText: 'Cancelar',
+        width: '600px',
+        preConfirm: () => {
+            const surplus = document.getElementById('swalSurplus').value;
+            const comments = document.getElementById('swalComments').value;
+            
+            if (!surplus) {
+                Swal.showValidationMessage('Por favor ingrese el monto sobrante');
+                return false;
+            }
+            
+            return {
+                surplus: parseFloat(surplus),
+                comments: comments
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Send data to backend
+            fetch('/sales-close', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    surplus: result.value.surplus,
+                    comments: result.value.comments
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire(
-                            '¡Ventas Cerradas!',
-                            'Las ventas del día han sido cerradas exitosamente.',
-                            'success'
-                        ).then(() => {
-                            window.location.reload();
-                        });
-                    } else {
-                        Swal.fire(
-                            'Error',
-                            'Hubo un problema al cerrar las ventas.',
-                            'error'
-                        );
-                    }
-                })
-                .catch(error => {
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        '¡Ventas Cerradas!',
+                        'Las ventas del día han sido cerradas exitosamente.',
+                        'success'
+                    ).then(() => {
+                        window.location.reload();
+                    });
+                } else {
                     Swal.fire(
                         'Error',
-                        'Hubo un problema al procesar la solicitud.',
+                        'Hubo un problema al cerrar las ventas.',
                         'error'
                     );
-                });
-            }
-        });
-    }
+                }
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Error',
+                    'Hubo un problema al procesar la solicitud.',
+                    'error'
+                );
+            });
+        }
+    });
+}
 </script>
