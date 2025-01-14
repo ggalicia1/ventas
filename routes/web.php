@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\DailyClosureController;
 
 
 require __DIR__.'/auth.php';
@@ -44,6 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/sales-close', [SaleController::class, 'dailyClosure']);
     Route::resource('sales', SaleController::class);
     Route::get('sales/{id}/receipt', [SaleController::class, 'generateReceipt'])->name('sales.receipt');
+
+    Route::get('/daily-closures', [DailyClosureController::class, 'index'])->name('daily-closures.index');
+    Route::get('/daily-closures/create', [DailyClosureController::class, 'create'])->name('daily-closures.create');
+    Route::post('/daily-closures', [DailyClosureController::class, 'store'])->name('daily-closures.store');
+    Route::get('/daily-closures/{dailyClosure}', [DailyClosureController::class, 'show'])->name('daily-closures.show');
     
     Route::get('/reports/sales', [ReportController::class, 'index'])->name('reports.sales.index');
 
