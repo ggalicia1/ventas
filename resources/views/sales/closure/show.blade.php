@@ -48,6 +48,57 @@
                     @endif
                 </div>
             </div>
+
+                        <!-- Tabla de Inventario -->
+                        <div class="bg-white rounded-lg p-6 shadow mt-6">
+                            <h3 class="text-lg font-semibold mb-4">Estado del Inventario</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="px-4 py-2 text-left text-gray-600">Producto</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Stock Actual</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Movimientos</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Precio de compra</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Precio</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Total vendido</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Total invertido</th>
+                                            <th class="px-4 py-2 text-left text-green-600">Diferencia o ganancia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($stocks as $stock)
+                                            <tr class="border-b">
+                                                <td class="px-4 py-2">{{ $stock->name }}</td>
+                                                <td class="px-4 py-2">{{ $stock->stock }}</td>
+                                                <td class="px-4 py-2">{{ $stock->total_sold }}</td>
+                                                <td class="px-4 py-2">{{ $stock->purchase_price }}</td>
+                                                <td class="px-4 py-2">Q {{ number_format($stock->sale_price, 2) }}</td>
+                                                <td class="px-4 py-2">Q {{ number_format($stock->sale_price * $stock->total_sold, 2) }}</td>
+                                                <td class="px-4 py-2">Q {{ number_format($stock->purchase_price * $stock->total_sold, 2) }}</td>
+                                                <td class="px-4 py-2 text-green-600">Q {{ number_format((($stock->sale_price * $stock->total_sold) - ($stock->purchase_price * $stock->total_sold)), 2) }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="px-4 py-2 text-center">No hay productos en el inventario.</td>
+                                            </tr>
+                                        @endforelse
+                                    
+                                        <tr class="border-b">
+                                            <td class="px-4 py-2">{{ '-----' }}</td>
+                                            <td class="px-4 py-2">{{ '-----' }}</td>
+                                            <td class="px-4 py-2">{{ '-----' }}</td>
+                                            <td class="px-4 py-2">{{ '-----' }}</td>
+                                            <td class="px-4 py-2">{{ '-----' }}</td>
+                                            <td class="px-4 py-2"><b>Q {{ number_format($sales_total, 2) }}</b></td>
+                                            <td class="px-4 py-2"><b>Q {{ number_format($purchase_price, 2) }}</b></td>
+                                            <td class="px-4 py-2 text-green-600"><b>Q {{ number_format($difference, 2) }}</b></td>
+                                        </tr>
+                                    </tbody>
+                                    
+                                </table>
+                            </div>
+                        </div>
         </div>
     </div>
 </x-app-layout>
