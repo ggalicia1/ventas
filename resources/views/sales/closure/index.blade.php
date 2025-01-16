@@ -28,7 +28,7 @@
                     <tbody>
                         @foreach($dailyClosures as $closure)
                             <tr class="border-t dark:border-gray-600">
-                                <td class="px-0 py-2">{{ $closure->date }}</td>
+                                <td class="px-0 py-2">{{ $closure->created_at }}</td>
                                 <td class="px-4 py-2 text-right">Q {{ number_format($closure->cash_sales_total, 2) }}</td>
                                 <td class="px-4 py-2 text-right">Q {{ number_format($closure->card_sales_total, 2) }}</td>
                                 <td class="px-4 py-2 text-right">Q {{ number_format($closure->total_sales, 2) }}</td>
