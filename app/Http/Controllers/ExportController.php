@@ -5,29 +5,34 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Spatie\SimpleExcel\SimpleExcelWriter;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
 
 class ExportController extends Controller
 {
     public function exportProductsStock()
     {
-        $products = Product::with(['stockHistory' => function ($query) {
-            $query->latest('date_added')->first();
-        }])->get();
+        $products = Product::with('stockHistory')
+        ->get();
 
         $filePath = storage_path('app/public/exports/products.xlsx');
 
         $writer = SimpleExcelWriter::create($filePath);
 
         foreach ($products as $product) {
+            //dd($product->stockHistory->first());
+            /* $stockHistory= $product->stockHistory->first();
+            dd($product); */
             $latestStock = $product->stockHistory->first();
-
+            //dd($latestStock);
             $writer->addRow([
-                'Name'              => $product->name,
+                'Nombre'              => $product->name,
                 'Stock'             => $product->stock,
-                'PurchasePrice'     => $latestStock->purchase_price ?? 'N/A',
-                'SalePrice'         => $latestStock->sale_price ?? 'N/A',
-                'ExpirationDate'    => $latestStock->expiration_date ?? 'N/A',
+                'Precio'             => $product->price,
+                'Ultimo historial Stock'      => $latestStock->remaining_quantity,
+                'Precio de Compra'     => $latestStock->purchase_price ?? 'N/A',
+                'Precio de venta historial Stock' => $latestStock->sale_price ?? 'N/A',
+                'Fecha de vencimiento'    => $latestStock->expiration_date ?? 'N/A',
             ]);
         }
 
