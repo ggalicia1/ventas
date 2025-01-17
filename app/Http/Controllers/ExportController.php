@@ -29,7 +29,7 @@ class ExportController extends Controller
                 'Nombre'              => $product->name,
                 'Stock'             => $product->stock,
                 'Precio'             => $product->price,
-                'Ultimo historial Stock'      => $latestStock->remaining_quantity,
+                'Ultimo historial Stock'      => $latestStock->remaining_quantity ?? 'N/A',
                 'Precio de Compra'     => $latestStock->purchase_price ?? 'N/A',
                 'Precio de venta historial Stock' => $latestStock->sale_price ?? 'N/A',
                 'Fecha de vencimiento'    => $latestStock->expiration_date ?? 'N/A',
