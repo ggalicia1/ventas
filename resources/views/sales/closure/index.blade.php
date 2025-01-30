@@ -9,6 +9,43 @@
                     Nuevo Cierre
                 </a>
             </div>
+                        {{-- 🔹 FORMULARIO DE FILTRO --}}
+                        <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded">
+                            <form method="GET" action="{{ route('daily-closures.index') }}" class="flex flex-wrap gap-4 items-center">
+                                {{-- Selección de Mes --}}
+                                <div>
+                                    <label for="month" class="block text-gray-700 dark:text-white">Mes:</label>
+                                    <select name="month" id="month" class="border rounded p-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-white">
+                                        @for ($m = 1; $m <= 12; $m++)
+                                            <option value="{{ $m }}" {{ $m == request('month', now()->month) ? 'selected' : '' }}>
+                                                {{ DateTime::createFromFormat('!m', $m)->format('F') }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+            
+                                {{-- Selección de Año --}}
+                                <div>
+                                    <label for="year" class="block text-gray-700 dark:text-white">Año:</label>
+                                    <select name="year" id="year" class="border rounded p-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-white">
+                                        @for ($y = now()->year; $y >= 2000; $y--)
+                                            <option value="{{ $y }}" {{ $y == request('year', now()->year) ? 'selected' : '' }}>
+                                                {{ $y }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+            
+                                {{-- Botón de Filtrar --}}
+                                <div>
+                                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition">
+                                        Filtrar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+            
+                        {{-- 🔹 TABLA DE CIERRES --}}
 
             <div class="container bg-white dark:bg-gray-700 px-6 py-6 rounded">
                 <table class="min-w-full bg-white dark:bg-gray-700">

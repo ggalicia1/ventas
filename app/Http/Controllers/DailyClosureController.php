@@ -4,19 +4,43 @@ namespace App\Http\Controllers;
 
 use App\Models\DailyClosures;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DailyClosureController extends Controller
 {
-    public function index()
+    public function index(Request $request) 
     {
-        $dailyClosures = DailyClosures::orderBy('date', 'desc')->paginate(10);
+         // Verificar si el request contiene 'month' y 'year', asegurando que sean valores válidos
+        if ($request->has('month') && is_numeric($request->input('month')) && $request->input('month') >= 1 && $request->input('month') <= 12) {
+            $month = $request->input('month');
+        } else {
+            $month = Carbon::now()->month;
+        }
+
+        if ($request->has('year') && is_numeric($request->input('year')) && $request->input('year') >= 2000 && $request->input('year') <= Carbon::now()->year) {
+            $year = $request->input('year');
+        } else {
+            $year = Carbon::now()->year;
+        }
+
+        // Obtener el primer y último día del mes seleccionado
+        $startDate = Carbon::createFromDate($year, $month, 1)->startOfDay();
+        $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->endOfDay();
+    
+        // Filtrar los registros dentro del mes seleccionado
+        $dailyClosures = DailyClosures::whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', 'desc')
+            ->paginate(10);
+    
+        // Calcular los totales para el mes seleccionado
         $totals = [
-            'surplus'        => DailyClosures::sum('surplus'),
-            'purchase_price' => DailyClosures::sum('purchase_price'),
-            'sales_total'    => DailyClosures::sum('sales_total'),
-            'difference'     => DailyClosures::sum('difference'),
+            'surplus'        => DailyClosures::whereBetween('date', [$startDate, $endDate])->sum('surplus'),
+            'purchase_price' => DailyClosures::whereBetween('date', [$startDate, $endDate])->sum('purchase_price'),
+            'sales_total'    => DailyClosures::whereBetween('date', [$startDate, $endDate])->sum('sales_total'),
+            'difference'     => DailyClosures::whereBetween('date', [$startDate, $endDate])->sum('difference'),
         ];
-        return view('sales.closure.index', compact('dailyClosures', 'totals'));
+    
+        return view('sales.closure.index', compact('dailyClosures', 'totals', 'month', 'year'));
     }
 
     public function create()

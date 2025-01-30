@@ -160,7 +160,6 @@ class SaleController extends Controller
 
         $date = Carbon::now();
         $latestCreationDate = $latestDailyClosure->created_at;
-        //dd($latestCreationDate, $date);
 
         
         $totalVentasDia = \DB::table('sale_details')
@@ -210,8 +209,8 @@ class SaleController extends Controller
             $total_win = $total_sale - $total_purchase;
             $diferencia += $total_win;
         }
-    // Verificar que los cálculos no sean 0
-    //dd($stocks, $purchase_price, $sales_total, $diferencia);
+        // Verificar que los cálculos no sean 0
+        //dd($stocks, $purchase_price, $sales_total, $diferencia);
         $costoVentasDia = \DB::table('sale_details')
                             ->join('products', 'products.id', '=', 'sale_details.product_id')
                             ->join(
