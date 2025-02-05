@@ -2,21 +2,16 @@
     <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="container px-6 py-8">
             <h2 class="text-2xl font-bold mb-6">Crear Nueva Venta</h2>
-            <div class="container px-6 py-6 bg-white rounded">
-                <form id="saleForm" action="{{ route('sales.store') }}" method="POST" class="space-y-4">
-                    @csrf
-        
-                    <!-- Sección de búsqueda de productos -->
-                    <div class="mb-4">
-                        <label for="productSearch" class="block text-gray-700">Buscar Producto:</label>
-                        <div class="flex">
-                            <input type="text" id="productSearch" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500" placeholder="Buscar por nombre...">
-                            <button type="button" class="ml-2 bg-blue-600 text-white px-4 rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400" onclick="searchProducts()">
-                                Buscar
-                            </button>
-                        </div>
+            <div class="flex gap-8 items-start">
+                <!-- Sección de búsqueda de productos -->
+                <div class="mb-10 mr-20 w-1/3">
+                    <label for="productSearch" class="block text-gray-700">Buscar Producto:</label>
+                    <div class="flex">
+                        <input type="text" id="productSearch" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500" placeholder="Buscar por nombre...">
+                        <button type="button" class="ml-2 bg-blue-600 text-white px-4 rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400" onclick="searchProducts()">
+                            Buscar
+                        </button>
                     </div>
-        
                     <!-- Lista de productos disponibles -->
                     <div id="available-products" class="mb-6">
                         <h3 class="text-lg font-semibold mb-2">Productos Disponibles</h3>
@@ -34,6 +29,92 @@
                             </table>
                         </div>
                     </div>
+                </div>
+                <!-- Método de Pago - 20% -->
+                <div class="w-1/5 border p-4 bg-gray-50">
+                    <h3 class="text-lg font-semibold mb-4">Método de Pago</h3>
+                    <div class="">
+                        <!-- Selector de método de pago -->
+                        <div>
+                            <label class="block text-gray-700 mb-2">Seleccione el método de pago:</label>
+                            <div class="space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="payment_method" value="cash" 
+                                           class="form-radio text-blue-600" 
+                                           onchange="togglePaymentMethod('cash')" checked>
+                                    <span class="ml-2">Efectivo</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="payment_method" value="card" 
+                                           class="form-radio text-blue-600" 
+                                           onchange="togglePaymentMethod('card')">
+                                    <span class="ml-2">Tarjeta</span>
+                                </label>
+                            </div>
+                        </div>
+                
+  
+                
+                        
+                    </div>
+                </div>
+                <div class="w-1/5 border p-4 bg-gray-50">
+                    <h3 class="text-lg font-semibold mb-4">Pago recibido</h3>
+                    <!-- Sección de Efectivo -->
+                    <div id="cashPaymentSection" class="">
+                      <div>
+                          <label for="cashAmount" id="lblPay" class="block text-gray-700 mb-2">Efectivo recibido:</label>
+                          <div class="flex items-center">
+                              <span class="text-gray-500 mr-2">Q</span>
+                              <input type="number" id="cashAmount" name="cash_amount" 
+                                     class="w-32 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                                     step="0.01" min="0" onchange="calculateChange()"
+                                     oninput="calculateChange()">
+                          </div>
+                      </div>
+          
+                      <div>
+                          <label class="block text-gray-700 mb-2">Cambio a entregar:</label>
+                          <div class="flex items-center">
+                              <span class="text-gray-500 mr-2">Q</span>
+                              <span id="changeAmount" class="text-lg font-semibold">0.00</span>
+                              <input type="hidden" name="change_amount" id="changeAmountInput" value="0">
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Sección de Tarjeta -->
+                  <div id="cardPaymentSection" class="space-y-4 hidden">
+                      <div>
+                          <label for="cardReference" class="block text-gray-700 mb-2">Referencia de transacción:</label>
+                          <input type="text" id="cardReference" name="card_reference" 
+                              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+                              placeholder="Número de referencia">
+                      </div>
+                  </div>
+                </div>
+            
+                <!-- Total Estimado - 20% -->
+                <div class="w-1/5">
+                    <div class="p-4 border border-gray-300 rounded-lg bg-gray-50">
+                        <h3 class="text-lg font-semibold">Total estimado de venta</h3>
+                        <p class="text-green-500 text-3xl">Q <span id="totalAmount">0.00</span></p>
+                    </div>
+                    <!-- Botón -->
+                    <div class="flex-grow flex items-start py-3">
+                        <button type="button" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                                onclick="confirmSale()">
+                            Crear Venta
+                        </button>
+                    </div>
+                </div>
+            
+
+            </div>
+            <div class="container bg-blue rounded">
+                <form id="saleForm" action="{{ route('sales.store') }}" method="POST" class="space-y-4">
+                    @csrf                    
+
         
                     <!-- Selección de productos a vender -->
                     <div id="selected-products" class="space-y-4 mb-6">
@@ -55,75 +136,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="space-y-4 mb-6 border p-4 rounded-lg bg-gray-50">
-                        <h3 class="text-lg font-semibold mb-4">Método de Pago</h3>
-                        
-                        <div class="space-y-4">
-                            <!-- Selector de método de pago -->
-                            <div>
-                                <label class="block text-gray-700 mb-2">Seleccione el método de pago:</label>
-                                <div class="space-x-4">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="payment_method" value="cash" 
-                                               class="form-radio text-blue-600" 
-                                               onchange="togglePaymentMethod('cash')" checked>
-                                        <span class="ml-2">Efectivo</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="payment_method" value="card" 
-                                               class="form-radio text-blue-600" 
-                                               onchange="togglePaymentMethod('card')">
-                                        <span class="ml-2">Tarjeta</span>
-                                    </label>
-                                </div>
-                            </div>
-                    
-                            <!-- Sección de Efectivo -->
-                            <div id="cashPaymentSection" class="space-y-4">
 
-                                <div>
-                                    <label for="cashAmount" id="lblPay" class="block text-gray-700 mb-2">Efectivo recibido:</label>
-                                    <div class="flex items-center">
-                                        <span class="text-gray-500 mr-2">Q</span>
-                                        <input type="number" id="cashAmount" name="cash_amount" 
-                                               class="w-32 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                                               step="0.01" min="0" onchange="calculateChange()"
-                                               oninput="calculateChange()">
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Cambio a entregar:</label>
-                                    <div class="flex items-center">
-                                        <span class="text-gray-500 mr-2">Q</span>
-                                        <span id="changeAmount" class="text-lg font-semibold">0.00</span>
-                                        <input type="hidden" name="change_amount" id="changeAmountInput" value="0">
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Sección de Tarjeta -->
-                            <div id="cardPaymentSection" class="space-y-4 hidden">
-                                <div>
-                                    <label for="cardReference" class="block text-gray-700 mb-2">Referencia de transacción:</label>
-                                    <input type="text" id="cardReference" name="card_reference" 
-                                        class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-                                        placeholder="Número de referencia">
-                                </div>
-                            </div>
-                    
-                        </div>
-                    </div>
-        
-                    <div class="flex justify-between mb-6">
-                        <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400" onclick="confirmSale()">
-                            Crear Venta
-                        </button>
-                    </div>
-        
-                    <div id="total-summary" class="p-4 border border-gray-300 rounded-lg bg-gray-50">
-                        <h3 class="text-lg font-semibold">Total Estimado</h3>
-                        <p class="text-gray-700">Q <span id="totalAmount">0.00</span></p>
-                    </div>
                 </form>
             </div>
         </div>
@@ -550,9 +563,15 @@
         
         // Validar si el efectivo es suficiente
         if (cashAmount < totalAmount) {
+            document.getElementById('changeAmount').classList.remove('text-yellow-600');
+            document.getElementById('changeAmount').classList.remove('text-black-600');
             document.getElementById('changeAmount').classList.add('text-red-600');
-        } else {
+        } else if(cashAmount == totalAmount){
             document.getElementById('changeAmount').classList.remove('text-red-600');
+            document.getElementById('changeAmount').classList.remove('text-yellow-600');
+        }else{
+            document.getElementById('changeAmount').classList.remove('text-yellow-600');
+            document.getElementById('changeAmount').classList.add('text-yellow-600');
         }
     }
 

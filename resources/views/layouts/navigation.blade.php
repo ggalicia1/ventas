@@ -107,7 +107,7 @@ class="min-h-screen bg-gray-100">
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto bg-gray-100">
                 <div class="py-6">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-10xl mx-auto px-4 sm:px-6 lg:px-12">
                         {{ $slot ?? '' }}
                     </div>
                 </div>

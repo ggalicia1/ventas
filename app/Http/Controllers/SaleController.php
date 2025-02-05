@@ -230,12 +230,26 @@ class SaleController extends Controller
                             ->where('sales.payment_method', 'cash')  // Filtrar por efectivo
                             ->sum('sale_details.quantity');  // Sumar la cantidad de productos vendidos con efectivo
 
-// Obtener la cantidad de productos vendidos con tarjeta
+        // Obtener la cantidad de productos vendidos con tarjeta
         $cantidadProductosTarjeta = \DB::table('sale_details')
                         ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
                         ->whereBetween('sales.created_at', [$latestCreationDate, $date])
                         ->where('sales.payment_method', 'card')  // Filtrar por tarjeta
                         ->sum('sale_details.quantity');  // Sumar la cantidad de productos vendidos con tarjeta
+        // Obtener la cantidad de productos vendidos con efectivo
+        $cantidadEfectivo = \DB::table('sale_details')
+                            ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
+                            //->whereDate('sales.date', $date)
+                            ->whereBetween('sales.created_at', [$latestCreationDate, $date])
+                            ->where('sales.payment_method', 'cash')  // Filtrar por efectivo
+                            ->sum('sale_details.total_price');  // Sumar la cantidad de productos vendidos con efectivo
+
+        // Obtener la cantidad de productos vendidos con tarjeta
+        $cantidadTarjeta = \DB::table('sale_details')
+                        ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
+                        ->whereBetween('sales.created_at', [$latestCreationDate, $date])
+                        ->where('sales.payment_method', 'card')  // Filtrar por tarjeta
+                        ->sum('sale_details.total_price');  // Sumar la cantidad de productos vendidos con tarjeta
 
                         
                         
@@ -243,6 +257,8 @@ class SaleController extends Controller
                                             'cantidadProductosVendidos',
                                             'stocks',
                                             'costoVentasDia',
+                                            'cantidadEfectivo',
+                                            'cantidadTarjeta',
                                             'cantidadProductosEfectivo',
                                             'cantidadProductosTarjeta',
                                             'date',            

@@ -22,6 +22,20 @@
                     <p class="text-sm text-green-600 mt-1">
                         Ganancia: Q {{ number_format($totalVentasDia - $costoVentasDia, 2) }}
                     </p>
+                    
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="mt-2 text-sm">
+                        <h3 class="text-lg font-semibold mb-2">Tipos de pago</h3>
+                        <p class="flex justify-between">
+                            <span>Venta con Efectivo:</span>
+                            <span class="font-medium">Q. {{ $cantidadEfectivo }}</span>
+                        </p>
+                        <p class="flex justify-between">
+                            <span>Venta con Tarjeta:</span>
+                            <span class="font-medium">Q. {{ $cantidadTarjeta }}</span>
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Tarjeta de Productos Vendidos -->
