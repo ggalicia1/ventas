@@ -8,7 +8,7 @@
                 <div class="flex flex-1 justify-center">
                     <div class="text-center">
                         <h3 class="text-lg font-semibold">Total de venta</h3>
-                        <p class="text-green-500 text-3xl">Q <span id="totalAmount">0.00</span></p>
+                        <p class="text-green-500 text-3xl"><b>Q <span id="totalAmount">0.00</span></b></p>
                     </div>
                 </div>
             </div>
@@ -18,15 +18,25 @@
                     <label for="productSearch" class="block text-gray-700">Buscar Producto:</label>
                     <div class="flex">
                         <input type="text" id="productSearch" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500" placeholder="Buscar por nombre...">
-                        <button type="button" class="ml-2 bg-blue-600 text-white px-4 rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400" onclick="searchProducts()">
+                        <button type="button" 
+                                class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center gap-2" 
+                                onclick="searchProducts()">
+                            <!-- Icono de búsqueda (Heroicons) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1117.5 10.5a7.5 7.5 0 01-7.5 7.5z"></path>
+                            </svg>
                             Buscar
                         </button>
+
                     </div>
                     <!-- Botón alineado a la derecha -->
                     <div class="w-full flex justify-end py-4">
                         <button type="button" 
-                                class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                                class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 flex items-center gap-2"
                                 onclick="confirmSale()">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l1 5m2 0h9l1-5m-5 12a2 2 0 110 4 2 2 0 010-4zM7 13a2 2 0 110 4 2 2 0 010-4zM9 8h6"></path>
+                            </svg>
                             Crear Venta
                         </button>
                     </div>
@@ -48,9 +58,10 @@
 
                                 <!-- Cuerpo del Modal -->
                                 <div class="overflow-x-auto">
-                                    <table class="min-w-full border border-gray-300">
+                                    <table class="w-full border border-gray-300">
                                         <thead>
                                             <tr class="bg-gray-100">
+                                                <th class="px-4 py-2 text-left text-gray-600">Codigo</th>
                                                 <th class="px-4 py-2 text-left text-gray-600">Producto</th>
                                                 <th class="px-4 py-2 text-left text-gray-600">Precio</th>
                                             </tr>
@@ -60,26 +71,21 @@
                                         </tbody>
                                     </table>
                                 </div>
-
                                 <!-- Pie del Modal -->
-                                <div class="mt-4 flex justify-end">
-                                    <button onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded">
+                                <div class="mt-4 flex justify-end ">
+                                    <button onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400">
                                         Cerrar
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    
-                     
                 </div>
                 <div class=" border p-4 bg-gray-50">
                     <h3 class="text-lg font-semibold mb-4">Pago recibido</h3>
                     <!-- Sección de Efectivo -->
                     <div id="cashPaymentSection" class="">
                       <div>
-                         
                           <div class="flex items-center">
                               <span class="text-gray-500 mr-2">Q</span>
                               <input type="number" id="cashAmount" name="cash_amount" 
@@ -88,7 +94,6 @@
                                      oninput="calculateChange()">
                           </div>
                       </div>
-          
                       <div>
                           <label class="block text-gray-700 mb-2">Cambio a entregar:</label>
                           <div class="flex items-center">
@@ -130,16 +135,12 @@
                                 </label>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
-
             </div>
             <div class="container rounded">
                 <form id="saleForm" action="{{ route('sales.store') }}" method="POST" class="space-y-4">
                     @csrf                    
-
-        
                     <!-- Selección de productos a vender -->
                     <div id="selected-products" class="space-y-4 mb-6">
                         <h3 class="text-lg font-semibold mb-2">Productos Seleccionados</h3>
@@ -147,6 +148,7 @@
                             <table class="min-w-full border border-gray-300">
                                 <thead>
                                     <tr class="bg-blue-100">
+                                        <th class="px-4 py-2 text-left text-gray-600">Codigo</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Producto</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Cantidad</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Precio</th>
@@ -222,7 +224,7 @@
             })
             .then(product => {
                 if (product) { // Solo procesar si se obtuvo un producto válido
-                    selectProduct(product.id, product.name, product.price);
+                    selectProduct(product.id, product.barcode, product.name, product.price);
                 }
             })
             .catch(error => console.error('Error:', error))
@@ -267,9 +269,10 @@
                 products.forEach(product => {
                     const row = document.createElement('tr');
                     row.classList.add('hover:bg-blue-100', 'cursor-pointer');
-                    row.onclick = () => selectProduct(product.id, product.name, product.price);
+                    row.onclick = () => selectProduct(product.id, product.barcode, product.name, product.price);
     
                     row.innerHTML = `
+                        <td class="px-4 py-2">${product.barcode}</td>
                         <td class="px-4 py-2">${product.name}</td>
                         <td class="px-4 py-2">Q ${parseFloat(product.price).toFixed(2)}</td>
                     `;
@@ -279,7 +282,7 @@
             .catch(error => console.error('Error:', error));
     }
     
-    function selectProduct(id, name, price) {
+    function selectProduct(id, barcode, name, price) {
         price = parseFloat(price);
         if (isNaN(price)) {
             alert("El precio del producto no es válido.");
@@ -323,6 +326,8 @@
         
         newRow.id = `product-row-${id}`;
         newRow.innerHTML = `
+
+            <td class="px-4 py-2">${barcode}</td>
             <td class="px-4 py-2">${name}</td>
             <td class="px-4 py-2">
                 <input type="number" class="w-16 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
