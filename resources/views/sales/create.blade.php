@@ -1,10 +1,20 @@
 <x-app-layout>
     <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-        <div class="container px-6 py-8">
-            <h2 class="text-2xl font-bold mb-6">Crear Nueva Venta</h2>
-            <div class="flex gap-8 items-start">
+        <div class="container px-6">
+            <div class="flex justify-between items-center w-full py-2">
+                <!-- Texto a la izquierda -->
+                <h2 class="text-2xl text-left font-bold">Nueva Venta</h2>
+                <!-- Contenedor centrado -->
+                <div class="flex flex-1 justify-center">
+                    <div class="text-center">
+                        <h3 class="text-lg font-semibold">Total de venta</h3>
+                        <p class="text-green-500 text-3xl">Q <span id="totalAmount">0.00</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-12 items-start">
                 <!-- Sección de búsqueda de productos -->
-                <div class="mb-10 mr-20 w-1/3">
+                <div class="mb-10 mr-2 w-1/2">
                     <label for="productSearch" class="block text-gray-700">Buscar Producto:</label>
                     <div class="flex">
                         <input type="text" id="productSearch" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500" placeholder="Buscar por nombre...">
@@ -12,58 +22,64 @@
                             Buscar
                         </button>
                     </div>
-                    <!-- Lista de productos disponibles -->
-                    <div id="available-products" class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2">Productos Disponibles</h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full border border-gray-300">
-                                <thead>
-                                    <tr class="bg-gray-100">
-                                        <th class="px-4 py-2 text-left text-gray-600">Producto</th>
-                                        <th class="px-4 py-2 text-left text-gray-600">Precio</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="product-list-body">
-                                    <!-- Los productos se llenarán aquí por JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
+                    <!-- Botón alineado a la derecha -->
+                    <div class="w-full flex justify-end py-4">
+                        <button type="button" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                                onclick="confirmSale()">
+                            Crear Venta
+                        </button>
                     </div>
-                </div>
-                <!-- Método de Pago - 20% -->
-                <div class="w-1/5 border p-4 bg-gray-50">
-                    <h3 class="text-lg font-semibold mb-4">Método de Pago</h3>
-                    <div class="">
-                        <!-- Selector de método de pago -->
-                        <div>
-                            <label class="block text-gray-700 mb-2">Seleccione el método de pago:</label>
-                            <div class="space-x-4">
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="payment_method" value="cash" 
-                                           class="form-radio text-blue-600" 
-                                           onchange="togglePaymentMethod('cash')" checked>
-                                    <span class="ml-2">Efectivo</span>
-                                </label>
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="payment_method" value="card" 
-                                           class="form-radio text-blue-600" 
-                                           onchange="togglePaymentMethod('card')">
-                                    <span class="ml-2">Tarjeta</span>
-                                </label>
+                    <!-- Modal -->
+                    <div id="productsModal" class="fixed inset-0 z-50 hidden">
+                        <!-- Fondo oscuro -->
+                        <div class="fixed inset-0 bg-black opacity-50" onclick="closeModal()"></div>
+
+                        <!-- Contenido del Modal -->
+                        <div class="fixed inset-0 flex items-center justify-center">
+                            <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6">
+                                <!-- Encabezado del Modal -->
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-semibold">Productos Disponibles</h3>
+                                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                                        &times;
+                                    </button>
+                                </div>
+
+                                <!-- Cuerpo del Modal -->
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full border border-gray-300">
+                                        <thead>
+                                            <tr class="bg-gray-100">
+                                                <th class="px-4 py-2 text-left text-gray-600">Producto</th>
+                                                <th class="px-4 py-2 text-left text-gray-600">Precio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="product-list-body">
+                                            <!-- Los productos se llenarán aquí por JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Pie del Modal -->
+                                <div class="mt-4 flex justify-end">
+                                    <button onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded">
+                                        Cerrar
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                
-  
-                
-                        
                     </div>
+                    
+                    
+                     
                 </div>
-                <div class="w-1/5 border p-4 bg-gray-50">
+                <div class=" border p-4 bg-gray-50">
                     <h3 class="text-lg font-semibold mb-4">Pago recibido</h3>
                     <!-- Sección de Efectivo -->
                     <div id="cashPaymentSection" class="">
                       <div>
-                          <label for="cashAmount" id="lblPay" class="block text-gray-700 mb-2">Efectivo recibido:</label>
+                         
                           <div class="flex items-center">
                               <span class="text-gray-500 mr-2">Q</span>
                               <input type="number" id="cashAmount" name="cash_amount" 
@@ -92,26 +108,34 @@
                       </div>
                   </div>
                 </div>
-            
-                <!-- Total Estimado - 20% -->
-                <div class="w-1/5">
-                    <div class="p-4 border border-gray-300 rounded-lg bg-gray-50">
-                        <h3 class="text-lg font-semibold">Total estimado de venta</h3>
-                        <p class="text-green-500 text-3xl">Q <span id="totalAmount">0.00</span></p>
-                    </div>
-                    <!-- Botón -->
-                    <div class="flex-grow flex items-start py-3">
-                        <button type="button" 
-                                class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400" 
-                                onclick="confirmSale()">
-                            Crear Venta
-                        </button>
+                <!-- Método de Pago - 20% -->
+                <div class="border p-4 bg-gray-50">
+                    <h3 class="text-lg font-semibold mb-4 ">Método de Pago</h3>
+                    <div class="">
+                        <!-- Selector de método de pago -->
+                        <div>
+                            <label class="block text-gray-700 mb-2">Seleccione el método de pago:</label>
+                            <div class="space-x-4 py-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="payment_method" value="cash" 
+                                           class="form-radio text-blue-600" 
+                                           onchange="togglePaymentMethod('cash')" checked>
+                                    <span class="ml-2">Efectivo</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="payment_method" value="card" 
+                                           class="form-radio text-blue-600" 
+                                           onchange="togglePaymentMethod('card')">
+                                    <span class="ml-2">Tarjeta</span>
+                                </label>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
-            
 
             </div>
-            <div class="container bg-blue rounded">
+            <div class="container rounded">
                 <form id="saleForm" action="{{ route('sales.store') }}" method="POST" class="space-y-4">
                     @csrf                    
 
@@ -139,11 +163,19 @@
 
                 </form>
             </div>
+           
         </div>
     </div>
 </x-app-layout>
 
 <script>
+     function openModal() {
+        document.getElementById('productsModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('productsModal').classList.add('hidden');
+    }
     let selectedProducts = []; // Arreglo para almacenar productos seleccionados
     let barcodeBuffer = ''; // Buffer para almacenar el código de barras
 
@@ -229,6 +261,7 @@
                     
                     return;
                 }
+                openModal();
     
                 // Renderizar los productos disponibles
                 products.forEach(product => {
