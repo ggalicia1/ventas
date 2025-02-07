@@ -40,46 +40,47 @@
                             Crear Venta
                         </button>
                     </div>
+
                     <!-- Modal -->
-                    <div id="productsModal" class="fixed inset-0 z-50 hidden">
+                    <div id="productsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
                         <!-- Fondo oscuro -->
-                        <div class="fixed inset-0 bg-black opacity-50" onclick="closeModal()"></div>
+                        <div class="absolute inset-0 bg-black opacity-50"></div>
 
                         <!-- Contenido del Modal -->
-                        <div class="fixed inset-0 flex items-center justify-center">
-                            <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6">
-                                <!-- Encabezado del Modal -->
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-semibold">Productos Disponibles</h3>
-                                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                                        &times;
-                                    </button>
-                                </div>
+                        <div class="relative bg-white rounded-lg shadow-lg w-3/5 h-3/5 p-6 flex flex-col z-50">
+                            <!-- Encabezado del Modal -->
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold">Productos Disponibles</h3>
+                                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                            </div>
 
-                                <!-- Cuerpo del Modal -->
-                                <div class="overflow-x-auto">
-                                    <table class="w-full border border-gray-300">
-                                        <thead>
-                                            <tr class="bg-gray-100">
-                                                <th class="px-4 py-2 text-left text-gray-600">Codigo</th>
-                                                <th class="px-4 py-2 text-left text-gray-600">Producto</th>
-                                                <th class="px-4 py-2 text-left text-gray-600">Precio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="product-list-body">
-                                            <!-- Los productos se llenarán aquí por JavaScript -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- Pie del Modal -->
-                                <div class="mt-4 flex justify-end ">
-                                    <button onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400">
-                                        Cerrar
-                                    </button>
-                                </div>
+                            <!-- Cuerpo del Modal con Scroll -->
+                            <div class="flex-grow overflow-y-auto border border-gray-300">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="px-4 py-2 text-left text-gray-600">Código</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Producto</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Precio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="product-list-body">
+                                        <!-- Los productos se llenarán aquí por JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pie del Modal -->
+                            <div class="mt-4 flex justify-end">
+                                <button onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                                    Cerrar
+                                </button>
                             </div>
                         </div>
                     </div>
+
+
+
                 </div>
                 <div class=" border p-4 bg-gray-50">
                     <h3 class="text-lg font-semibold mb-4">Pago recibido</h3>
