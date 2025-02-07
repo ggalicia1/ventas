@@ -40,7 +40,8 @@
                             Crear Venta
                         </button>
                     </div>
-
+                    <!-- Contenedor de notificaciones -->
+                    <div id="notification-container" class="fixed top-5 right-5 z-[9999]"></div>
                     <!-- Modal -->
                     <div id="productsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
                         <!-- Fondo oscuro -->
@@ -286,7 +287,7 @@
     function selectProduct(id, barcode, name, price) {
         price = parseFloat(price);
         if (isNaN(price)) {
-            alert("El precio del producto no es válido.");
+            showNotification("El precio del producto no es válido.", "error");
             return;
         }
 
@@ -309,6 +310,7 @@
             
             // Actualizar el total general
             calculateTotal();
+            showNotification(`Producto "${name}" seleccionado con éxito!`, "success");
             return;
         }
 
@@ -353,6 +355,7 @@
         document.getElementById('selected-product-list').appendChild(newRow);
 
         calculateTotal();
+        showNotification(`Producto "${name}" seleccionado con éxito!`, "success");
     }
 
     function removeProduct(productId) {
@@ -613,5 +616,29 @@
             document.getElementById('changeAmount').classList.add('text-yellow-600');
         }
     }
+
+    function showNotification(message, type = 'success') {
+        const container = document.getElementById('notification-container');
+
+        // Estilos según el tipo de mensaje
+        const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+
+        // Crear el elemento de notificación
+        const notification = document.createElement('div');
+        notification.className = `${bgColor} text-white px-4 py-2 rounded shadow-lg mb-2 opacity-100 transition-opacity duration-500 ease-in-out z-[9999]`;
+        notification.innerText = message;
+
+        // Agregar al contenedor
+        container.appendChild(notification);
+
+        // Desvanecer y eliminar la notificación después de 5 segundos
+        setTimeout(() => {
+            notification.classList.add('opacity-0');
+            setTimeout(() => {
+                notification.remove();
+            }, 400);
+        }, 5000);
+    }
+
 
 </script>
