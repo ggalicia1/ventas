@@ -21,7 +21,7 @@ class SaleController extends Controller
         $latestDailyClosure = DailyClosures::latest()->first();
 
         $date = Carbon::now();
-        $latestCreationDate = $latestDailyClosure->created_at;
+        $latestCreationDate = isset($latestDailyClosure->created_at) ? $latestDailyClosure->created_at : Carbon::now()->startOfDay();
         $sales = Sale::with('details.product')
                                             ->whereBetween('created_at', [$latestCreationDate, $date])
                                             ->paginate(3);
