@@ -8,6 +8,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\DailyClosureController;
+use App\Http\Controllers\TransactionController;
 
 
 require __DIR__.'/auth.php';
@@ -38,7 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::post('products/{id}/add-stock', [ProductController::class, 'addProductStock'])->name('products.addStock.post');
     Route::post('products/masive-stock', [ProductController::class, 'storeMassiveProducts'])->name('products.store.massive');
     Route::delete('products/delete-stock/{id}', [ProductController::class, 'deleteStockHistory'])->name('products.stock.delete');
-    
+    Route::get('/products/{id}/edit-stock', [ProductController::class, 'edit_stock'])->name('products.stock.edit');
+    Route::put('/products/{id}/edit-stock', [ProductController::class, 'update_stock'])->name('products.stock.update');
+
     
     
     Route::get('sales/close', [SaleController::class, 'closeSales'])->name('sales.close');
@@ -54,5 +57,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/sales', [ReportController::class, 'index'])->name('reports.sales.index');
 
     Route::get('/export-products-stock', [ExportController::class, 'exportProductsStock'])->name('export.products_stock');
+
+
+    Route::resource('transactions', TransactionController::class);
 });
 

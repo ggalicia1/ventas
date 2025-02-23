@@ -227,6 +227,34 @@ class ProductController extends Controller
         }
     }
 
+    public function edit_stock($id)
+    {
+        $productStock = ProductStockHistory::findOrFail($id);
+
+        return view('products.edit_stock', compact('productStock'));
+    }
+
+    public function update_stock(Request $request, $id)
+    {
+       /*  $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'purchase_price' => 'required|numeric|min:0',
+            'sale_price' => 'required|numeric|min:0',
+            'expiration_date' => 'required|date|after:today',
+        ]);
+        dd($request->all()); */
+        $productStock = ProductStockHistory::findOrFail($id);
+        $productStock->update([
+            'quantity' => $request->quantity,
+            'purchase_price' => $request->purchase_price,
+            'sale_price' => $request->sale_price,
+            'expiration_date' => $request->expiration_date,
+        ]);
+
+        return redirect()->route('products.index')->with('success', 'Stock actualizado correctamente.');
+    }
+
+
     public function deleteStockHistory($id)
     {
         try {
@@ -266,5 +294,7 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
+
     
 }
