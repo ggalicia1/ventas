@@ -52,16 +52,15 @@ class DailyClosureController extends Controller
     public function show(Request $dailyClosure)
     {
         $dailyClosure = DailyClosures::findOrFail($dailyClosure->dailyClosure);
-        // Encuentra el registro anterior basado en created_at
+        
         $previousClosure = DailyClosures::where('created_at', '<', $dailyClosure->created_at)
             ->orderBy('created_at', 'desc')
             ->first();
 
         // Pasamos las fechas a la vista para usarlas en otros cálculos
         $currentDate = $dailyClosure->created_at;
-        $previousDate = $previousClosure ? $previousClosure->created_at : null;
-        
-        //dd();
+        $previousDate = $previousClosure ? $previousClosure->created_at : $dailyClosure->date . ' 00:00:00';
+
         $stocks = \DB::table('products')
             ->select(
                 'products.id',
