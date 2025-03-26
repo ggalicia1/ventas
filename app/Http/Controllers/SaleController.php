@@ -275,12 +275,20 @@ class SaleController extends Controller
     { 
           
         try {
-            $date = Carbon::today();
+
+            $latestDailyClosure = DailyClosures::latest()->first();
+
+            $date = Carbon::now();
+            //$latestCreationDate = $latestDailyClosure->created_at;
+            $latestCreationDate = isset($latestDailyClosure->created_at) ? $latestDailyClosure->created_at : Carbon::now()->startOfDay();
+            
+
+           // $date = Carbon::today();
     
             // Calcular ventas en efectivo
             $cashSales = \DB::table('sale_details')
                 ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
-                ->whereDate('sales.created_at', $date)
+                ->whereBetween('sales.created_at',[$latestCreationDate, $date])
                 ->where('sales.payment_method', 'cash')
                 ->select(
                     \DB::raw('SUM(sale_details.total_price) as total'),
@@ -291,7 +299,7 @@ class SaleController extends Controller
             // Calcular ventas con tarjeta
             $cardSales = \DB::table('sale_details')
                 ->join('sales', 'sales.id', '=', 'sale_details.sale_id')
-                ->whereDate('sales.created_at', $date)
+                ->whereBetween('sales.created_at', [$latestCreationDate, $date])
                 ->where('sales.payment_method', 'card')
                 ->select(
                     \DB::raw('SUM(sale_details.total_price) as total'),
@@ -314,7 +322,7 @@ class SaleController extends Controller
                     ), 0) AS purchase_price') // Subconsulta para obtener el precio de compra más reciente
                 )
                 ->join('sale_details', 'sale_details.product_id', '=', 'products.id') // Relación con sale_details
-                ->whereDate('sale_details.created_at', '=', $date) // Filtrar por la fecha actual
+                ->whereBetween('sale_details.created_at', [$latestCreationDate, $date]) // Filtrar por la fecha actual
                 ->groupBy('products.id', 'products.name', 'products.stock') // Agrupar por los campos correspondientes
                 ->havingRaw('total_sold > 0') // Asegurar que hubo movimiento
                 ->get();
