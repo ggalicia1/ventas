@@ -9,7 +9,10 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\DailyClosureController;
 use App\Http\Controllers\TransactionController;
-
+use App\Http\Controllers\ShoppingController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ProviderController;
+use App\Http\Controllers\ProductStockHistoryController;
 
 require __DIR__.'/auth.php';
 
@@ -58,7 +61,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/export-products-stock', [ExportController::class, 'exportProductsStock'])->name('export.products_stock');
 
-
     Route::resource('transactions', TransactionController::class);
+
+    Route::get('/shopping', [ShoppingController::class, 'index'])->name('shopping.index');
+
+    Route::resource('purchases', PurchaseController::class);
+
+    Route::resource('providers', ProviderController::class);
+
+    
+    Route::get('/product-stock-history/total-by-day', [ProductStockHistoryController::class, 'showTotalByMonth'])->name('product-stock-history.total-by-day');
+    Route::get('/product-stock-history/details-by-day/{date}', [ProductStockHistoryController::class, 'showDetailsByDay'])->name('product-stock-history.details-by-day');
+
 });
 
