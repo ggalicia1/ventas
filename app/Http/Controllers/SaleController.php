@@ -79,7 +79,7 @@ class SaleController extends Controller
                 // Obtener los lotes disponibles (FIFO: ordenados por fecha de ingreso)
                 $availableLots = $product->stockHistory()
                     ->where('remaining_quantity', '>', 0)
-                    ->orderBy('date_added')
+                    ->orderBy('id', 'desc')
                     ->get();
 
                 $remainingToSell = $quantity;
