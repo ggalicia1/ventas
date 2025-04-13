@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/shopping', [ShoppingController::class, 'index'])->name('shopping.index');
 
     Route::resource('purchases', PurchaseController::class);
+    Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show');
 
     Route::resource('providers', ProviderController::class);
 

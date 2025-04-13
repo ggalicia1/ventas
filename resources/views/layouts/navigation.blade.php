@@ -1,12 +1,9 @@
 <nav x-data="{ 
     sidebarOpen: false 
-}" 
-class="min-h-screen bg-gray-100">
+}" class="min-h-screen bg-gray-100">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside 
-            class="w-64 bg-gradient-to-br from-blue-800 to-blue-600 text-white py-7 px-2 hidden sm:block flex-shrink-0 h-full overflow-y-auto"
-        >
+        <aside class="w-64 bg-gradient-to-br from-blue-800 to-blue-600 text-white py-7 px-2 hidden sm:block flex-shrink-0 h-full overflow-y-auto">
             <div class="flex justify-between items-center px-4">
                 <a href="#" class="text-white flex items-center space-x-2">
                     <span class="text-2xl font-extrabold">Sistema de Ventas</span>
@@ -21,6 +18,14 @@ class="min-h-screen bg-gray-100">
                 </a>
                 <a href="{{ route('products.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('products.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-box mr-2"></i>Productos
+                </a>
+                <!-- Enlace a Compras -->
+                <a href="{{ route('purchases.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('purchases.*') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-shopping-cart mr-2"></i>Compras
+                </a>
+                <!-- Enlace a Proveedores -->
+                <a href="{{ route('providers.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('providers.*') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-truck mr-2"></i>Proveedores
                 </a>
                 <a href="{{ route('sales.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('sales.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-shopping-cart mr-2"></i>Ventas
