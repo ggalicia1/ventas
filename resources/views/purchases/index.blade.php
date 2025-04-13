@@ -5,6 +5,10 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-semibold text-gray-800">Compras</h2>
+                        <a href="{{ route('product-stock-history.total-by-day') }}" 
+                           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Compras son proveedor
+                        </a>
                         <a href="{{ route('purchases.create') }}" 
                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                             Nueva Compra
