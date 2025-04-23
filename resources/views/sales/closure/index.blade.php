@@ -5,8 +5,8 @@
         <div class="container mx-auto px-6 py-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Cierres Diarios</h2>
-                <a href="{{ route('daily-closures.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition">
-                    Nuevo Cierre
+                <a href="{{ route('sales.close') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition">
+                    Cierre de hoy
                 </a>
             </div>
                         {{-- 🔹 FORMULARIO DE FILTRO --}}
