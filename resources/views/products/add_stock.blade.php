@@ -9,7 +9,7 @@
         <div class="container mx-auto px-6 py-8">
             <h2 class="text-2xl font-bold mb-6">Añadir Stock a {{ $product->name }}</h2>
             
-            <form action="{{ route('products.addStock', $product->id) }}" method="POST" class="bg-white p-6 rounded shadow mb-8">
+            {{-- <form action="{{ route('products.addStock', $product->id) }}" method="POST" class="bg-white p-6 rounded shadow mb-8">
                 @csrf
                 <div class="grid grid-cols-2 gap-4">
                     <div class="mb-4">
@@ -31,7 +31,7 @@
                 </div>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Añadir Stock</button>
             </form>
-
+ --}}
             <h3 class="text-xl font-bold mb-4">Historial de Stock</h3>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
