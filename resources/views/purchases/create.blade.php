@@ -183,13 +183,12 @@
                             <table class="min-w-full border border-gray-300">
                                 <thead>
                                     <tr class="bg-blue-100">
-                                        <th class="px-4 py-2 text-left text-gray-600">Codigo</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Producto</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Cantidad</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Precio de compra</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Precio de venta</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Fecha de vencimiento</th>
-                                        <th class="px-4 py-2 text-left text-gray-600">Total</th>
+                                        <th class="px-4 py-2 text-left text-gray-600">Total producto</th>
                                         <th class="px-4 py-2 text-left text-gray-600">Acciones</th>
                                     </tr>
                                 </thead>
@@ -383,12 +382,11 @@
 
         newRow.id = `product-row-${id}`;
         newRow.innerHTML = `
-            <td class="px-4 py-2">${barcode}</td>
             <td class="px-4 py-2">${name}</td>
 
             <!-- Cantidad del Producto (editable) -->
             <td class="px-4 py-2">
-                <input type="number" class="w-25 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 quantity"
+                <input type="number" class="w-20 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 quantity"
                     min="1" value="" 
                     onchange="updateTotal(this, ${id})">
                 <input type="hidden" name="products[${selectedProducts.length - 1}][id]" value="${id}">
@@ -397,14 +395,15 @@
 
             <!-- Precio de Compra (editable) -->
             <td class="px-4 py-2">
-                <input type="number" class="w-22 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 purchase-price"
+                <input type="number" 
+                    class="w-1/2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 purchase-price"
                     value="" 
                     onchange="updatePurchasePrice(this, ${id})">
             </td>
 
             <!-- Precio de Venta (editable) -->
             <td class="px-4 py-2">
-                <input type="number" class="w-22 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 sale-price"
+                <input type="number" class="w-1/2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 sale-price"
                     value="" 
                     onchange="updateSalePrice(this, ${id})">
             </td>

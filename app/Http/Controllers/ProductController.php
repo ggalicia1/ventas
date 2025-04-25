@@ -246,6 +246,7 @@ class ProductController extends Controller
         $productStock = ProductStockHistory::findOrFail($id);
         $productStock->update([
             'quantity' => $request->quantity,
+            'remaining_quantity' => $request->remaining_quantity,
             'purchase_price' => $request->purchase_price,
             'sale_price' => $request->sale_price,
             'expiration_date' => $request->expiration_date,

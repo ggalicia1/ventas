@@ -12,6 +12,10 @@
                 <label for="quantity" class="block text-sm font-medium text-gray-700">Cantidad</label>
                 <input type="number" name="quantity" id="quantity" class="border p-2 rounded w-full" required min="1" value="{{ $productStock->quantity }}">
             </div>
+            <div class="mb-4">
+                <label for="remaining_quantity" class="block text-sm font-medium text-gray-700">Cantidad restante</label>
+                <input type="number" name="remaining_quantity" id="remaining_quantity" class="border p-2 rounded w-full" required min="1" value="{{ $productStock->remaining_quantity }}">
+            </div>
 
             <div class="input-field">
                 <label for="purchase_price" class="block text-sm font-medium text-gray-700">Precio de compra</label>

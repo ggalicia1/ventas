@@ -67,6 +67,15 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
                                             </button>
+                                            <a href="{{ route('products.stock.edit', $history->id) }}" 
+                                                class="px-3 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                                                 <!-- Ícono de lápiz -->
+                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
+                                                      viewBox="0 0 24 24" stroke="currentColor">
+                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                           d="M15.232 5.232l3.536 3.536M9 11l6 6M4 20h4l10-10a2.121 2.121 0 00-3-3L5 17v3z" />
+                                                 </svg>
+                                            </a>
                                         </div>
                                     @endif
                                 </td>
