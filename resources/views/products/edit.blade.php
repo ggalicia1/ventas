@@ -21,10 +21,10 @@
                         <label for="description" class="text-gray-700">Descripción</label>
                     </div>
             
-{{--                     <div class="input-field">
+                    <div class="input-field">
                         <input type="number" id="price" name="price" step="0.01" value="{{ old('price', $product->price) }}" required class="border rounded-md p-2 w-full">
                         <label for="price" class="text-gray-700">Precio</label>
-                    </div> --}}
+                    </div>
                     <div class="input-field">
                         <input type="number" id="stock" name="stock" value="{{ old('stock', $product->stock) }}" required class="border rounded-md p-2 w-full">
                         <label for="price" class="text-gray-700">Stock</label>
@@ -46,7 +46,7 @@
                     </div>
             
                     <button type="submit" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1">
-                        <i class="material-icons left mr-2">save</i> Actualizar
+                        Actualizar
                     </button>
                 </form>
             </div>
