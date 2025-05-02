@@ -57,5 +57,9 @@ class Product extends Model
         return $this->hasOne(ProductStockHistory::class, 'product_id')->latest('date_added');
     }
 
+    public function lostProducts()
+    {
+        return $this->hasMany(LostProduct::class);
+    }
     
 }

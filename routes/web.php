@@ -13,6 +13,7 @@ use App\Http\Controllers\ShoppingController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\ProductStockHistoryController;
+use App\Http\Controllers\ReportLostProductController;
 
 require __DIR__.'/auth.php';
 
@@ -45,7 +46,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/{id}/edit-stock', [ProductController::class, 'edit_stock'])->name('products.stock.edit');
     Route::put('/products/{id}/edit-stock', [ProductController::class, 'update_stock'])->name('products.stock.update');
 
-    
+
+    /* PEDIDAS DE PRODUCTO */
+    Route::get('products/{id}/add-lost-product', [ReportLostProductController::class, 'showLostProductForm'])->name('products.lostProduct');
+    Route::post('products/{id}/add-lost-product', [ReportLostProductController::class, 'addLostProductStock'])->name('products.addLostProductStock.post');
+    Route::get('products/{id}/edit-lost-product', [ReportLostProductController::class, 'editLostProductStock'])->name('products.lostProducts.edit');
+
+
     
     Route::get('sales/close', [SaleController::class, 'closeSales'])->name('sales.close');
     Route::post('/sales-close', [SaleController::class, 'dailyClosure']);

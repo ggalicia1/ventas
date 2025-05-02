@@ -54,23 +54,39 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <div class="flex space-x-2">
                                             <a href="{{ route('products.edit', $product->id) }}" 
-                                               class="px-3 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                                               class="px-3 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                               title="Editar producto">
                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 3l8 8-7 7h-5l-1 4-4-1 1-4v-5l7-7-8-8 4-4 8 8z" />
                                                 </svg>
                                             </a>
                                             <a href="{{ route('products.addStock', $product->id) }}" 
-                                                class="px-3 py-2 text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16M4 12h16" />
-                                                </svg>
-                                            </a>
+                                                class="px-3 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                                title="Ver stock de producto">
+                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                     <!-- Icono de ojo (Heroicons eye) -->
+                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                           d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                 </svg>
+                                             </a>
+                                             <a href="{{ route('products.lostProduct', $product->id) }}" 
+                                                class="px-3 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                                                title="Agregar pérdida de producto">
+                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                     <!-- Ícono de signo menos -->
+                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                                                 </svg>
+                                             </a>                                             
+                                             
                                             @if(Auth::user()->email == 'gustavogalicia247@gmail.com')
                                                 <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este producto?')" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" 
-                                                            class="px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                                            class="px-3 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                            title="Eliminar producto">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                                             </svg>
