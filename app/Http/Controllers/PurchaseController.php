@@ -68,62 +68,66 @@ class PurchaseController extends Controller
     public function store(Request $request)
     {
 
-        /* 
+        
         try {
-            //code...
-        } catch (\Throwable $th) {
-            //throw $th;
-        } */
-        // Validate the purchase data
-        $validated = $request->validate([
-            'provider_id' => 'required',
-            'date' => 'required|date',
-            //'user_id' => 'required|integer',
-            'receipt_type' => 'required|string',
-            'receipt_number' => 'required|string',
-            'receipt_series' => 'required|string',
-            'total_amount' => 'required|numeric',
-            //'status' => 'required|string',
-            'products' => 'required|array',
-            'products.*.id' => 'required|integer',
-            'products.*.quantity' => 'required|integer',
-            //'products.*.remaining_quantity' => 'required|integer',
-            'products.*.purchasePrice' => 'required|numeric',
-            'products.*.salePrice' => 'required|numeric',
-            'products.*.expirationDate' => 'required|date',
-        ]);
-
-        // Create the purchase
-        $purchase = Purchase::create([
-            'provider_id' => $validated['provider_id'],
-            'date' => $validated['date'],
-            'user_id' => \Auth::user()->id,
-            'receipt_type' => $validated['receipt_type'],
-            'receipt_number' => $validated['receipt_number'],
-            'receipt_series' => $validated['receipt_series'],
-            'total' => $validated['total_amount'],
-            //'status' => 1,
-        ]);
-
-        // Save the products associated with the purchase
-        foreach ($validated['products'] as $product_stock) {
-            $product = Product::find($product_stock['id']);
-            ProductStockHistory::create([
-                'product_id' => $product->id,
-                'quantity' => $product_stock['quantity'],
-                'remaining_quantity' => $product->stock + $product_stock['quantity'],
-                'purchase_price' => $product_stock['purchasePrice'],
-                'sale_price' => $product_stock['salePrice'],
-                'expiration_date' => $product_stock['expirationDate'],
-                'date_added' => $product_stock['expirationDate'],
-                'purchase_id' => $purchase->id,
+            DB::beginTransaction();
+        
+            // Validate the purchase data
+            $validated = $request->validate([
+                'provider_id' => 'required',
+                'date' => 'required|date',
+                //'user_id' => 'required|integer',
+                'receipt_type' => 'required|string',
+                'receipt_number' => 'required|string',
+                'receipt_series' => 'required|string',
+                'total_amount' => 'required|numeric',
+                //'status' => 'required|string',
+                'products' => 'required|array',
+                'products.*.id' => 'required|integer',
+                'products.*.quantity' => 'required|integer',
+                //'products.*.remaining_quantity' => 'required|integer',
+                'products.*.purchasePrice' => 'required|numeric',
+                'products.*.salePrice' => 'required|numeric',
+                'products.*.expirationDate' => 'required|date',
             ]);
 
-            $product->stock = $product->stock + $product_stock['quantity'];
-            $product->save();
-        }
+            // Create the purchase
+            $purchase = Purchase::create([
+                'provider_id' => $validated['provider_id'],
+                'date' => $validated['date'],
+                'user_id' => \Auth::user()->id,
+                'receipt_type' => $validated['receipt_type'],
+                'receipt_number' => $validated['receipt_number'],
+                'receipt_series' => $validated['receipt_series'],
+                'total' => $validated['total_amount'],
+                //'status' => 1,
+            ]);
 
-        return response()->json(['success' => true]);
+            // Save the products associated with the purchase
+            foreach ($validated['products'] as $product_stock) {
+                $product = Product::find($product_stock['id']);
+                ProductStockHistory::create([
+                    'product_id' => $product->id,
+                    'quantity' => $product_stock['quantity'],
+                    'remaining_quantity' => $product->stock + $product_stock['quantity'],
+                    'purchase_price' => $product_stock['purchasePrice'],
+                    'sale_price' => $product_stock['salePrice'],
+                    'expiration_date' => $product_stock['expirationDate'],
+                    'date_added' => $product_stock['expirationDate'],
+                    'purchase_id' => $purchase->id,
+                ]);
+
+                $product->stock = $product->stock + $product_stock['quantity'];
+                $product->price = $product_stock['salePrice'];
+                $product->save();
+            }
+            DB::commit();
+
+            return response()->json(['success' => true]);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['success' => false]);
+        }
   }
 
 

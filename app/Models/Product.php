@@ -37,7 +37,6 @@ class Product extends Model
 
         // Opcional: Actualizar el precio de venta actual
         $this->price = $salePrice;
-        $this->price = $salePrice;
         $this->save();
     }
 
