@@ -27,6 +27,31 @@
                 <a href="{{ route('providers.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('providers.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-truck mr-2"></i>Proveedores
                 </a>
+                <div x-data="{ open: {{ request()->routeIs('payments.*') ? 'true' : 'false' }} }" class="relative">
+                    <!-- Botón principal -->
+                    <button @click="open = !open"
+                        class="flex items-center w-full py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('payments.*') ? 'bg-blue-700 text-white' : '' }}">
+                        <i class="fas fa-truck mr-2"></i>
+                        <span class="flex-1 text-left">Pagos</span>
+                        <i :class="{ 'rotate-180': open }" class="fas fa-chevron-down transition-transform ml-auto"></i>
+                    </button>
+
+                    <!-- Submenú -->
+                    <div x-show="open" @click.away="open = false" class="pl-8 mt-1 space-y-1">
+                        <a href="{{ route('payments.index') }}"
+                        class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-600 {{ request()->routeIs('payments.index') ? 'bg-blue-600 text-white' : '' }}">
+                            <i class="fas fa-list mr-2"></i>Ver Pagos
+                        </a>
+                        <a href="{{ route('persons.index') }}"
+                        class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-600 {{ request()->routeIs('persons.index') ? 'bg-blue-600 text-white' : '' }}">
+                            <i class="fas fa-plus mr-2"></i>Personas
+                        </a>
+                        <a href="{{ route('services.index') }}"
+                        class="block py-2 px-4 rounded transition duration-200 hover:bg-blue-600 {{ request()->routeIs('services.index') ? 'bg-blue-600 text-white' : '' }}">
+                            <i class="fas fa-plus mr-2"></i>Servicios
+                        </a>
+                    </div>
+                </div>
                 <a href="{{ route('sales.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('sales.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-shopping-cart mr-2"></i>Ventas
                 </a>

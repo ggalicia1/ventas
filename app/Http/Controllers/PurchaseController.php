@@ -7,14 +7,48 @@ use App\Models\Provider;
 use App\Models\Product;
 use App\Models\ProductStockHistory;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
 {
     public function index()
     {
-        $purchases = Purchase::paginate(10);
+        $month = request('month') ?? Carbon::now()->month;
+        $year = request('year') ?? Carbon::now()->year;
 
-        return view('purchases.index', compact('purchases'));
+        $query = Purchase::query(); // always initialize a query
+
+        if ($month && $year) {
+            $query->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year);
+        }
+
+        // Paginated purchases
+        $purchases = $query->orderBy('created_at', 'desc')->paginate(5);
+
+        // Separate query for monthly totals (don't use $purchases here)
+        $monthly_totals = Purchase::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total) as total')
+            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+            ->orderByRaw('YEAR(created_at), MONTH(created_at)')
+            ->get()
+            ->map(function ($item) {
+                $item->month_name = Carbon::create($item->year, $item->month)->format('F Y');
+                return $item;
+            });
+
+        $total_amount = $monthly_totals->sum('total');
+
+        // Valor total del mes consultado
+        $total_month = 0; // valor por defecto
+        foreach ($monthly_totals as $month_data) {
+            if ($month_data->year == $year && $month_data->month == $month) {
+                $total_month = $month_data->total;
+                break;
+            }
+        }
+
+        return view('purchases.index', compact('purchases', 'monthly_totals', 'total_amount', 'total_month', 'month', 'year'));
     }
 
     public function create()
@@ -68,7 +102,7 @@ class PurchaseController extends Controller
     public function store(Request $request)
     {
 
-        
+       // dd($request->all());
         try {
             DB::beginTransaction();
         

@@ -14,6 +14,9 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\ProductStockHistoryController;
 use App\Http\Controllers\ReportLostProductController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PersonController;
+use App\Http\Controllers\ServiceController;
 
 require __DIR__.'/auth.php';
 
@@ -80,6 +83,37 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/product-stock-history/total-by-day', [ProductStockHistoryController::class, 'showTotalByMonth'])->name('product-stock-history.total-by-day');
     Route::get('/product-stock-history/details-by-day/{date}', [ProductStockHistoryController::class, 'showDetailsByDay'])->name('product-stock-history.details-by-day');
+
+    //payment
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+    Route::get('/payments/{id}', [PaymentController::class, 'show'])->name('payments.show');
+    Route::get('/payments/{id}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
+    Route::put('/payments/{id}', [PaymentController::class, 'update'])->name('payments.update');
+    Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+
+    //Person
+    Route::get('/persons', [PersonController::class, 'index'])->name('persons.index');
+    Route::get('/persons/create', [PersonController::class, 'create'])->name('persons.create');
+    Route::post('/persons', [PersonController::class, 'store'])->name('persons.store');
+    Route::get('/persons/{id}', [PersonController::class, 'show'])->name('persons.show');
+    Route::get('/persons/{id}/edit', [PersonController::class, 'edit'])->name('persons.edit');
+    Route::put('/persons/{id}', [PersonController::class, 'update'])->name('persons.update');
+    Route::delete('/persons/{id}', [PersonController::class, 'destroy'])->name('persons.destroy');
+    Route::get('/persons/payment/{id}', [PersonController::class, 'paymentPersonCreate'])->name('persons.payment.create');
+    Route::post('/persons/payment/{id}', [PersonController::class, 'paymentPerson'])->name('persons.paymentPerson');
+
+    //Person
+    Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+    Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
+    Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+    Route::get('/services/{id}', [ServiceController::class, 'show'])->name('services.show');
+    Route::get('/services/{id}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+    Route::put('/services/{id}', [ServiceController::class, 'update'])->name('services.update');
+    Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
+    Route::get('/services/payment/{id}', [ServiceController::class, 'paymentServiceCreate'])->name('services.payment.create');
+    Route::post('/services/payment/{id}', [ServiceController::class, 'paymentService'])->name('services.paymentService');
 
 });
 
