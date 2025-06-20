@@ -62,6 +62,7 @@
                                         <tr class="bg-gray-100">
                                             <th class="px-4 py-2 text-left text-gray-600">Código</th>
                                             <th class="px-4 py-2 text-left text-gray-600">Producto</th>
+                                            <th class="px-4 py-2 text-left text-gray-600">Precio</th>
                                         </tr>
                                     </thead>
                                     <tbody id="product-list-body">
@@ -330,6 +331,7 @@
                     row.innerHTML = `
                         <td class="px-4 py-2">${product.barcode}</td>
                         <td class="px-4 py-2">${product.name}</td>
+                        <td class="px-4 py-2">${product.price}</td>
 
                     `;
                     productListBody.appendChild(row);
