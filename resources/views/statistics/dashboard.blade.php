@@ -54,12 +54,6 @@
                         </table>
                         </div>
                     </div>
-
-                    <div class="mt-4">
-                        <a href="{{ route('statistics.total-by-day') }}" class="text-blue-600 hover:underline">
-                            {{ __('View Total by Day Statistics') }}
-                        </a>
-                </div>
             </div>
         </div>
     </div>

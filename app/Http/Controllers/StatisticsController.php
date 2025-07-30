@@ -36,7 +36,7 @@ class StatisticsController extends Controller
             ->leftJoin('sales', 'sale_details.sale_id', '=', 'sales.id')
             ->groupBy('products.id', 'products.name', 'products.stock')
             ->orderByDesc('total_vendido')
-            ->take(30)
+            //->take(30)
             ->get();
 
         return view('statistics.dashboard', compact('productos', 'hoy', 'inicioSemana', 'finSemana', 'inicioMes', 'finMes'));
