@@ -29,9 +29,9 @@
                                 <tr>
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Producto</th>
                                     <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Total Vendido</th>
-                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Hoy</th>
-                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Semana</th>
-                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Mes</th>
+                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Hoy {{ $hoy }}</th>
+                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Semana {{ date("m-d", strtotime($inicioSemana)) }} al {{ date("m-d", strtotime($finSemana)) }}</th>
+                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Mes {{ date("m-d", strtotime($inicioMes)) }} al {{ date("m-d", strtotime($finMes)) }}</th>
                                     <th class="px-4 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Stock</th>
                                 </tr>
                             </thead>
