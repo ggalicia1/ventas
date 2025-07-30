@@ -17,6 +17,7 @@ use App\Http\Controllers\ReportLostProductController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StatisticsController;
 
 require __DIR__.'/auth.php';
 
@@ -24,10 +25,10 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::get('/dashboard', function () {
+/* Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
+ */
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -114,6 +115,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
     Route::get('/services/payment/{id}', [ServiceController::class, 'paymentServiceCreate'])->name('services.payment.create');
     Route::post('/services/payment/{id}', [ServiceController::class, 'paymentService'])->name('services.paymentService');
+
+
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('dashboard');
+    Route::get('/statistics/total-by-day', [StatisticsController::class, 'showTotalByDay'])->name('statistics.total-by-day');
+    Route::get('/statistics/details-by-day/{date}', [StatisticsController::class, 'showDetailsByDay'])->name('statistics.details-by-day');
+    Route::get('/statistics/total-by-month', [StatisticsController::class, 'showTotalByMonth'])->name('statistics.total-by-month');
+    Route::get('/statistics/details-by-month/{month}', [StatisticsController::class, 'showDetailsByMonth'])->name('statistics.details-by-month');
 
 });
 
