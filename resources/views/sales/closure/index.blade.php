@@ -93,9 +93,15 @@
                                 <td class="px-4 text-right">Q {{ number_format($closure->card_sales_total, 2) }}</td>
                                 <td class="px-4 text-right">Q {{ number_format($closure->total_sales, 2) }}</td>
                                 <td class="px-4 text-right">Q {{ number_format($closure->surplus, 2) }}</td>
-                                <td class="px-4 text-right bg-blue-50">Q {{ number_format(number_format($closure->total_sales, 2) + number_format($closure->surplus, 2), 2) }}</td>
-                                <td class="px-4 text-right bg-green-50">Q {{ $closure->difference }}</td>
-                                <td class="px-4 text-right bg-orange-50">Q {{ number_format($closure->purchase_price, 2) }}</td>
+                                <td class="px-4 text-right bg-blue-50">
+                                    Q {{ number_format($closure->total_sales + $closure->surplus, 2) }}
+                                </td>
+                                <td class="px-4 text-right bg-green-50">
+                                    Q {{ number_format($closure->difference, 2) }}
+                                </td>
+                                <td class="px-4 text-right bg-orange-50">
+                                    Q {{ number_format($closure->purchase_price, 2) }}
+                                </td>
                                 <td class="px-4 text-right">{{ $closure->total_products_sold }}</td>
                                 <td class="px-0">
                                     <div class="flex justify-center space-x-2">
