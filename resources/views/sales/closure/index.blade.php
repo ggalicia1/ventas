@@ -117,12 +117,22 @@
                             <td class="px-4 py-2 text-right">{{ '----' }}</td>
                             <td class="px-4 py-2 text-right">{{ '----' }}</td>
                             <td class="px-4 py-2 text-right">{{ '----' }}</td>
-                            <td class="px-4 py-2 text-right"><b>Q {{ $totals['sales_total'] }}</b></td>
-                            <td class="px-4 py-2 text-right"><b>Q {{ number_format($totals['surplus'], 2) }}</b></td>
-                            <td class="px-4 py-2 text-right bg-blue-600 text-white"><b>Q {{ number_format(number_format($totals['sales_total']) + number_format($totals['surplus'], 2), 2)  }}</b></td>
-                            <td class="px-4 py-2 text-right bg-green-600 text-white"><b>Q {{ $totals['difference'] }}</b></td>
-                            <td class="px-4 py-2 text-right bg-orange-600 text-white"><b>Q {{ $totals['purchase_price'] }}</b></td>
-                            <td class="px-4 py-2 text-right">{{ '----' }}</td>
+                            <td class="px-4 py-2 text-right">
+                                <b>Q {{ number_format($totals['sales_total'], 2) }}</b>
+                            </td>
+                            <td class="px-4 py-2 text-right">
+                                <b>Q {{ number_format($totals['surplus'], 2) }}</b>
+                            </td>
+                            <td class="px-4 py-2 text-right bg-blue-600 text-white">
+                                <b>Q {{ number_format($totals['sales_total'] + $totals['surplus'], 2) }}</b>
+                            </td>
+                            <td class="px-4 py-2 text-right bg-green-600 text-white">
+                                <b>Q {{ number_format($totals['difference'], 2) }}</b>
+                            </td>
+                            <td class="px-4 py-2 text-right bg-orange-600 text-white">
+                                <b>Q {{ number_format($totals['purchase_price'], 2) }}</b>
+                            </td>
+                            <td class="px-4 py-2 text-right">---- </td>
                         </tr>
                     </tbody>
                 </table>
