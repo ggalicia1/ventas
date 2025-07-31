@@ -9,13 +9,13 @@
         <div class="container mx-auto px-6 py-8">
             <button 
                 onclick="showCloseDialog()"
-                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                class="px-4 py-2 mb-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
                 Cerrar Ventas del Día
             </button>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 <!-- Tarjeta de Ventas Totales -->
-                <div class="bg-white rounded-lg p-6 shadow">
+                <div class="bg-green-50/50 border border-green-300  rounded-lg p-6 shadow">
                     <h3 class="text-lg font-semibold mb-2">Ventas del Día</h3>
                     <p class="text-2xl text-green-600 font-bold">Q {{ number_format($totalVentasDia, 2) }}</p>
                     <p class="text-sm text-gray-600 mt-2">Costo: Q {{ number_format($costoVentasDia, 2) }}</p>
@@ -24,7 +24,7 @@
                     </p>
                     
                 </div>
-                <div class="bg-white rounded-lg p-6 shadow">
+                <div class="bg-orange-50/50 border border-orange-300  rounded-lg p-6 shadow">
                     <div class="mt-2 text-sm">
                         <h3 class="text-lg font-semibold mb-2">Tipos de pago</h3>
                         <p class="flex justify-between">
@@ -39,7 +39,7 @@
                 </div>
 
                 <!-- Tarjeta de Productos Vendidos -->
-                <div class="bg-white rounded-lg p-6 shadow">
+                <div class="bg-purple-50/50 border border-purple-300  rounded-lg p-6 shadow">
                     <h3 class="text-lg font-semibold mb-2">Productos Vendidos</h3>
                     <p class="text-2xl text-blue-600 font-bold">{{ $cantidadProductosVendidos }}</p>
                     <div class="mt-2 text-sm">
@@ -55,14 +55,14 @@
                 </div>
 
                 <!-- Tarjeta de Fecha -->
-                <div class="bg-white rounded-lg p-6 shadow">
+                <div class="bg-blue-50/50 border border-blue-300 rounded-lg p-6 shadow">
                     <h3 class="text-lg font-semibold mb-2">Fecha del Reporte</h3>
                     <p class="text-2xl text-gray-700">{{ date('d-m-Y', strtotime($date)) }}</p>
                 </div>
             </div>
 
             <!-- Tabla de Inventario -->
-            <div class="bg-white rounded-lg p-6 shadow mt-6">
+            <div class="bg-white border border-gray-300 rounded-lg p-4 shadow mt-6">
                 <h3 class="text-lg font-semibold mb-4">Estado del Inventario</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white">
